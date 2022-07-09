@@ -1,25 +1,35 @@
 #include <iostream>
 #include <fstream>
-
+#include <map>
 using namespace std;
-
+map<string, string> symbolTable;
+void loadfile()
+{
+    string line;
+    ifstream file("test.txt");
+    while (getline(file, line))
+    {
+        symbolTable.insert(pair<string, string>(to_string(rand()), line));
+    }
+    file.close();
+}
+void savefile()
+{
+    ofstream test("test.txt");
+    test << "hej" << endl;
+    test.close();
+}
 int main()
 {
-    cout << "hej" << endl;
-    ofstream test("hellop.txt");
-    test << "text 1" << endl
-         << "text 2";
-    test.close();
-    string tt;
-    ifstream test2("hellop.txt");
-    while (getline(test2, tt))
+    srand(time(0));
+    loadfile();
+    symbolTable.insert(pair<string, string>("hi", "hello"));
+    map<string, string>::iterator it;
+    for (it = symbolTable.begin(); it != symbolTable.end(); it++)
     {
-        cout << tt << endl;
+        cout << it->first // string (klucz)
+             << ':'
+             << it->second // string wartość
+             << endl;
     }
-    int a = 10;
-    int *b = &a;
-    cout << a << endl;
-    *b = 12;
-    cout << a << endl;
-    cout << b << endl;
 }

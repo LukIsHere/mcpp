@@ -34,10 +34,58 @@ int64_t getid(string id)
     }
     return 691032155643445359;
 }
+class lista
+{
+public:
+    string root;
+    lista(string in)
+    {
+        root = in;
+    }
+    bool include()
+    {
+    }
+    void push(string)
+    {
+    }
+    void remove(string)
+    {
+    }
+    string getplain()
+    {
+    }
+};
+// meta data
+class metaData
+{
+public:
+    map<string, lista> listam;
+    map<string, string> stringm;
+    map<string, int> intm;
+    metaData(string)
+    {
+        // end - ,
+        // lista - name:[value]
+        // string - name:value
+        // int - name:%
+    }
+    void seti(string name, int value)
+    {
+    }
+    void set(string name, string value)
+    {
+    }
+    void setl(string name, lista value)
+    {
+    }
+    string getall()
+    {
+    }
+};
 // urzytkownicy
 class user
 {
-    // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:[skiny]:[theme]:[other]:[other] (9)
+    // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:{metaData} (9) 691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}
 public:
     int64_t id;
     string nick;
@@ -46,20 +94,29 @@ public:
     int money;
     string skins;
     string themes;
-    user(int64_t idd, string nickd, int scored, string dated, int moneyd, string skinsd, string themesd)
+    int valid = 1;
+    metaData meta = metaData("{}");
+    user(int64_t idd, string nickd, int scored, string dated, int moneyd, string metad)
     {
-        id = idd;
-        nick = nickd;
-        score = scored;
-        date = dated;
-        skins = skinsd;
-        themes = themesd;
+        try
+        {
+            id = idd;
+            nick = nickd;
+            score = scored;
+            date = dated;
+            money = moneyd;
+            meta = metaData(metad);
+        }
+        catch (const std::exception &e)
+        {
+            valid = 0;
+        }
     }
     user(string data)
     {
         try
         {
-            string datta[9];
+            string datta[5];
             int indexdata = 0;
             cout << data.length() << endl;
             for (int i = 0; data.length() > i; ++i)
@@ -80,8 +137,6 @@ public:
             score = stoi(datta[2]);
             date = datta[3];
             money = stoi(datta[4]);
-            skins = datta[5];
-            themes = datta[6];
         }
         catch (...)
         {
@@ -95,8 +150,6 @@ public:
         cout << "-wynik  : " << to_string(score) << endl;
         cout << "-data  : " << date << endl;
         cout << "-pieniądze  : " << to_string(money) << endl;
-        cout << "-skiny  : " << skins << endl;
-        cout << "-tła  : " << themes << endl;
     }
     string getString()
     {
@@ -112,10 +165,7 @@ public:
         out.append(":");
         out.append(to_string(money));
         out.append(":");
-        out.append(skins);
-        out.append(":");
-        out.append(themes);
-        out.append(":[other]:[other]");
+
         return out;
     }
 };
@@ -570,13 +620,11 @@ void loadUSERS()
 void saveUSERS()
 {
     ofstream test("hello.txt");
-    test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:[skiny]:[theme]:[other]:[other]" << endl;
+    test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}" << endl;
     test.close();
 }
 // główna funkcja
 int main()
 {
-    loadUSERS();
-    saveUSERS();
     srand((unsigned int)time(0));
 }

@@ -8,12 +8,10 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jun 26 19:16:56 2022
+# Make data base, printed on Sat Jul 09 17:28:26 2022
 
 # Variables
 
-# environment
-FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
 SYSTEMDRIVE = C:
 # environment
@@ -21,13 +19,15 @@ LC_ALL = C
 # environment
 USERPROFILE = C:\Users\lukas
 # environment
-LOCAL_GIT_DIRECTORY = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.2\resources\app\git
+VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
+# environment
+LOCAL_GIT_DIRECTORY = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.3\resources\app\git
 # environment
 LOCALAPPDATA = C:\Users\lukas\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-4609d527-7440-4bf8-a3f4-b520e73fdb93-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-59fbd022-1891-4289-80ff-038fbc7b9106-sock
 # environment
-VSCODE_CWD = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.2
+VSCODE_CWD = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.3
 # environment
 SYSTEMROOT = C:\WINDOWS
 # environment
@@ -39,11 +39,9 @@ MAKE_COMMAND := make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_14120_MMXLSSQPASMJXTAZ
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_17088_XANPCUQMUDPJSUTB
 # environment
 VS160COMCOMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\
-# environment
-FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -97,7 +95,7 @@ MAKEFILE_LIST :=
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 14120
+VSCODE_PID = 17088
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -223,7 +221,7 @@ WIX = C:\Program Files (x86)\WiX Toolset v3.11\
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 142 Stepping 9, GenuineIntel
 # variable set hash-table stats:
-# Load=105/1024=10%, Rehash=0, Collisions=10/129=8%
+# Load=104/1024=10%, Rehash=0, Collisions=9/128=7%
 
 # Pattern-specific Variable Values
 
@@ -231,9 +229,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 142 Stepping 9, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/lukas/Documents/luktvpl site/minecraft-er-cpp, mtime 1656263796): 9 files, no impossibilities.
+# . (key c:/Users/lukas/Documents/luktvpl site/minecraft-er-cpp, mtime 1656768801): 11 files, no impossibilities.
 
-# 9 files, no impossibilities in 1 directories.
+# 11 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -290,12 +288,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 16 / storage = 136 B / avg = 8 B
-# current buf: size = 8162 B / used = 136 B / count = 16 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 18 / storage = 156 B / avg = 8 B
+# current buf: size = 8162 B / used = 156 B / count = 18 / avg = 8 B
 
-# strcache performance: lookups = 19 / hit rate = 15%
+# strcache performance: lookups = 21 / hit rate = 14%
 # hash-table stats:
-# Load=16/8192=0%, Rehash=0, Collisions=0/19=0%
-# Finished Make data base on Sun Jun 26 19:16:56 2022
+# Load=18/8192=0%, Rehash=0, Collisions=0/21=0%
+# Finished Make data base on Sat Jul 09 17:28:26 2022
 
  
