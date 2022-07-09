@@ -82,19 +82,21 @@ public:
             money = stoi(datta[4]);
             skins = datta[5];
             themes = datta[6];
-
-            cout << "-id dc  : " << id << endl;
-            cout << "-nick dc  : " << nick << endl;
-            cout << "-wynik  : " << to_string(score) << endl;
-            cout << "-data  : " << date << endl;
-            cout << "-pieniądze  : " << to_string(money) << endl;
-            cout << "-skiny  : " << skins << endl;
-            cout << "-tła  : " << themes << endl;
         }
         catch (...)
         {
             cout << "błąd użytkownika : " << data << endl;
         }
+    }
+    void logout()
+    {
+        cout << "-id dc  : " << id << endl;
+        cout << "-nick dc  : " << nick << endl;
+        cout << "-wynik  : " << to_string(score) << endl;
+        cout << "-data  : " << date << endl;
+        cout << "-pieniądze  : " << to_string(money) << endl;
+        cout << "-skiny  : " << skins << endl;
+        cout << "-tła  : " << themes << endl;
     }
     string getString()
     {
@@ -555,14 +557,26 @@ map<int, instancja> sescje;
 map<int64_t, user> usersData;
 void loadUSERS()
 {
+    string tt;
+    ifstream test2("hello.txt");
+    while (getline(test2, tt))
+    {
+        user u = user(tt);
+        u.logout();
+        usersData.insert(pair<int64_t, user>(u.id, u));
+    }
+    test2.close();
 }
 void saveUSERS()
 {
+    ofstream test("hello.txt");
+    test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:[skiny]:[theme]:[other]:[other]" << endl;
+    test.close();
 }
 // główna funkcja
 int main()
 {
-    user u = user("691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:[skiny]:[theme]:[other]:[other]");
-    user d = user(u.getString());
+    loadUSERS();
+    saveUSERS();
     srand((unsigned int)time(0));
 }
