@@ -2,9 +2,35 @@
 #include <map>
 #include <fstream>
 #include <string>
-
+#include <thread>
+#include <dpp/dpp.h>
 using namespace std;
-
+// print
+string btos(bool value)
+{
+    if (value == true)
+        return "true";
+    else if (value == false)
+        return "false";
+    else
+        return "null";
+}
+void print(string text)
+{
+    cout << text << endl;
+}
+void print(int text)
+{
+    cout << text << endl;
+}
+void print(bool text)
+{
+    cout << btos(text) << endl;
+}
+void print(char text)
+{
+    cout << btos(text) << endl;
+}
 // kolory (terminal)
 map<string, string> cm = {
     {"red", "\u001b[31m"},
@@ -38,21 +64,173 @@ class lista
 {
 public:
     string root;
+    lista()
+    {
+        root = "[]";
+    }
     lista(string in)
     {
         root = in;
     }
-    bool include()
+    bool include(string value)
     {
+        bool out = false;
+        string cur = "";
+        string anal = nocar();
+        for (int i = 0; i < anal.length(); i++)
+        {
+            if (anal.at(i) == ',')
+            {
+
+                if (cur == value)
+                {
+                    out = true;
+                }
+
+                cur = "";
+            }
+            else
+            {
+                cur += anal.at(i);
+            }
+        }
+        if (cur == value)
+        {
+            out = true;
+        }
+        return out;
     }
-    void push(string)
+
+    void push(string in)
     {
+        string anal = nocar();
+        if (anal != "")
+            anal += ',';
+        anal.append(in);
+        root = addcar(anal);
     }
-    void remove(string)
+    void remove(string value)
     {
+        string cur = "";
+        string anal = nocar();
+        int start = 0;
+        int leng = 0;
+        int fs;
+        int fl;
+        for (int i = 0; i < anal.length(); i++)
+        {
+            if (anal.at(i) == ',')
+            {
+                if (cur == value)
+                {
+                    fs = start;
+                    fl = leng;
+                }
+                cur = "";
+                start = i + 1;
+                leng = 0;
+            }
+            else
+            {
+                leng++;
+                cur += anal.at(i);
+            }
+        }
+        if (cur == value)
+        {
+            fs = start;
+            fl = leng;
+        }
+        string out = "";
+        if (anal.at(fs + fl) == ',')
+        {
+            fl++;
+        }
+        else if (anal.at(fs - 1) == ',')
+        {
+            fs--;
+            fl++;
+        }
+        for (int i = 0; i < anal.length(); i++)
+        {
+            if (i < fs || i > fs + fl - 1)
+            {
+                out += anal.at(i);
+            }
+        }
+        root = addcar(out);
     }
     string getplain()
     {
+        return root;
+    }
+    string get(int elid)
+    {
+        string cur = "";
+        int id = 0;
+        string anal = nocar();
+        for (int i = 0; i < anal.length(); i++)
+        {
+            if (anal.at(i) == ',')
+            {
+                if (id == elid)
+                {
+                    return cur;
+                }
+                else
+                {
+                    cur = "";
+                }
+                id++;
+            }
+            else
+            {
+                cur += anal.at(i);
+            }
+        }
+        if (id == elid)
+        {
+            return cur;
+        }
+        return "";
+    }
+    int size()
+    {
+        int out = 1;
+        string anal = nocar();
+        for (int i = 0; i < anal.length(); i++)
+        {
+            if (anal.at(i) == ',')
+            {
+                out++;
+            }
+        }
+        return out;
+    }
+
+private:
+    string nocar()
+    {
+        string out = "";
+        for (int i = 0; i < root.length(); i++)
+        {
+            if (root.at(i) != '[' && root.at(i) != ']')
+            {
+                out += root.at(i);
+            }
+            else
+            {
+            }
+        }
+        return out;
+    }
+    string addcar(string in)
+    {
+        string out = "";
+        out.append("[");
+        out.append(in);
+        out.append("]");
+        return out;
     }
 };
 // meta data
@@ -61,25 +239,141 @@ class metaData
 public:
     map<string, lista> listam;
     map<string, string> stringm;
-    map<string, int> intm;
-    metaData(string)
+    metaData(string input)
     {
-        // end - ,
+        // end - ;
         // lista - name:[value]
         // string - name:value
-        // int - name:%
+        int state = 0;
+        // 0 - read key
+        // 1 - read value
+        // 2 - read value(arr)
+
+        string key = "";
+        string value = "";
+        string anal = nocar(input);
+        for (int i = 0; i < anal.length(); i++)
+        {
+
+            if (anal.at(i) == ':')
+            {
+                if (anal.at(i + 1) == '[')
+                    state = 2;
+                else
+                    state = 1;
+            }
+            else if (anal.at(i) == ']')
+            {
+                value += anal.at(i);
+                state = 1;
+            }
+            else if (state == 1 && anal.at(i) == ',')
+            {
+                rawPut(key, value);
+                key = "";
+                value = "";
+                state = 0;
+            }
+            else if (state != 0)
+            {
+                value += anal.at(i);
+            }
+            else
+            {
+                key += anal.at(i);
+            }
+        }
+        if (state == 1 || state == 2)
+            rawPut(key, value);
     }
-    void seti(string name, int value)
+    void sets(string name, string value)
     {
-    }
-    void set(string name, string value)
-    {
+        stringm.insert(pair<string, string>(name, value));
     }
     void setl(string name, lista value)
     {
+        listam.insert(pair<string, lista>(name, value));
+    }
+    void setl(string name, string value)
+    {
+        listam.insert(pair<string, lista>(name, lista(value)));
+    }
+    string *gets(string name)
+    {
+        return &(stringm[name]);
+    }
+    lista *getl(string name)
+    {
+        return &(listam[name]);
     }
     string getall()
     {
+        string out = "{";
+        bool first = true;
+        // string
+        map<string, string>::iterator it;
+        for (it = stringm.begin(); it != stringm.end(); it++)
+        {
+            if (first == false)
+                out += ',';
+            out.append(it->first);
+            out += ':';
+            out.append(it->second);
+            first = false;
+        }
+        // lista
+        map<string, lista>::iterator itlista;
+        for (itlista = listam.begin(); itlista != listam.end(); itlista++)
+        {
+            if (first == false)
+                out += ',';
+            out.append(itlista->first);
+            out += ':';
+            out.append(getl(itlista->first)->getplain());
+            first = false;
+        }
+        // out
+        out += '}';
+        return out;
+    }
+
+private:
+    void rawPut(string key, string value)
+    {
+
+        if (value.at(0) == '[')
+        {
+            // list
+            setl(key, value);
+        }
+        else
+        {
+            // string
+            sets(key, value);
+        }
+    }
+    string nocar(string in)
+    {
+        string out = "";
+        for (int i = 0; i < in.length(); i++)
+        {
+            if (in.at(i) != '{' && in.at(i) != '}')
+            {
+                out += in.at(i);
+            }
+            else
+            {
+            }
+        }
+        return out;
+    }
+    string addcar(string in)
+    {
+        string out = "";
+        out.append("{");
+        out.append(in);
+        out.append("}");
+        return out;
     }
 };
 // urzytkownicy
@@ -92,10 +386,29 @@ public:
     int score;
     string date;
     int money;
-    string skins;
-    string themes;
     int valid = 1;
+    bool empty = false;
     metaData meta = metaData("{}");
+    user()
+    {
+        empty = true;
+        usercr("0: :0: :0:{}");
+    }
+    user(int64_t idd, string nickd, int scored, string dated)
+    {
+        try
+        {
+            id = idd;
+            nick = nickd;
+            score = scored;
+            date = dated;
+            money = 0;
+        }
+        catch (const std::exception &e)
+        {
+            valid = 0;
+        }
+    }
     user(int64_t idd, string nickd, int scored, string dated, int moneyd, string metad)
     {
         try
@@ -114,16 +427,21 @@ public:
     }
     user(string data)
     {
+        usercr(data);
+    }
+    void usercr(string data)
+    {
         try
         {
-            string datta[5];
+            string datta[6];
             int indexdata = 0;
+            bool rmeta = false;
             cout << data.length() << endl;
             for (int i = 0; data.length() > i; ++i)
             {
                 string charr;
                 charr.push_back(data.at(i));
-                if (charr != ":")
+                if (charr != ":" || indexdata == 5)
                 {
                     datta[indexdata].append(charr);
                 }
@@ -137,6 +455,7 @@ public:
             score = stoi(datta[2]);
             date = datta[3];
             money = stoi(datta[4]);
+            meta = metaData(datta[5]);
         }
         catch (...)
         {
@@ -145,15 +464,11 @@ public:
     }
     void logout()
     {
-        cout << "-id dc  : " << id << endl;
-        cout << "-nick dc  : " << nick << endl;
-        cout << "-wynik  : " << to_string(score) << endl;
-        cout << "-data  : " << date << endl;
-        cout << "-pieniądze  : " << to_string(money) << endl;
+        cout << getString() << endl;
     }
     string getString()
     {
-        // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:[skiny]:[theme]:[other]:[other]
+        // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:{meta}
         string out;
         out.append(to_string(id));
         out.append(":");
@@ -165,10 +480,13 @@ public:
         out.append(":");
         out.append(to_string(money));
         out.append(":");
+        out.append(meta.getall());
 
         return out;
     }
 };
+// ranki
+int64_t rankint[25]; // 0-24
 // skiny (postacie)
 class skine
 {
@@ -608,7 +926,7 @@ map<int64_t, user> usersData;
 void loadUSERS()
 {
     string tt;
-    ifstream test2("hello.txt");
+    ifstream test2("data.txt");
     while (getline(test2, tt))
     {
         user u = user(tt);
@@ -619,12 +937,36 @@ void loadUSERS()
 }
 void saveUSERS()
 {
-    ofstream test("hello.txt");
-    test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}" << endl;
+    ofstream test("data.txt");
+    map<int64_t, user>::iterator it;
+    for (it = usersData.begin(); it != usersData.end(); it++)
+    {
+        test
+            << it->second.getString() << endl;
+    }
+    // test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}" << endl;
     test.close();
+}
+// ranking
+void reloadRank()
+{
 }
 // główna funkcja
 int main()
 {
     srand((unsigned int)time(0));
+    string tt;
+    ifstream test2("token.txt");
+    string token;
+    getline(test2, token);
+    dpp::cluster bot(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_message_reactions);
+    bot.on_log(dpp::utility::cout_logger());
+    bot.on_message_create([&bot](const dpp::message_create_t &event)
+                          {
+        if(event.msg.content == ".test"){
+            int d[4] = {0,0,0,0};
+            event.send(instancja(1,d).DcOutp(0));
+        } });
+    bot.start(false);
+    loadUSERS();
 }

@@ -8,10 +8,12 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jul 09 17:28:26 2022
+# Make data base, printed on Mon Jul 11 11:35:47 2022
 
 # Variables
 
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
 SYSTEMDRIVE = C:
 # environment
@@ -25,8 +27,6 @@ LOCAL_GIT_DIRECTORY = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.3\resou
 # environment
 LOCALAPPDATA = C:\Users\lukas\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-59fbd022-1891-4289-80ff-038fbc7b9106-sock
-# environment
 VSCODE_CWD = C:\Users\lukas\AppData\Local\GitHubDesktop\app-3.0.3
 # environment
 SYSTEMROOT = C:\WINDOWS
@@ -39,9 +39,11 @@ MAKE_COMMAND := make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_17088_XANPCUQMUDPJSUTB
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_3344_EYVKKCZWWFNEOVWV
 # environment
 VS160COMCOMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -50,12 +52,10 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 %D = $(patsubst %/,%,$(patsubst %\,%,$(dir $%)))
 # automatic
 ^D = $(patsubst %/,%,$(patsubst %\,%,$(dir $^)))
-# environment
-VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\lukas\AppData\Roaming\Code\CachedData\30d9c6cd9483b2cc586687151bcbcd635f373630
+VSCODE_CODE_CACHE_PATH = C:\Users\lukas\AppData\Roaming\Code\CachedData\92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9
 # environment
 LANG = C
 # default
@@ -70,8 +70,6 @@ MAKEFLAGS = pqrR
 ONEDRIVE = C:\Users\lukas\OneDrive
 # makefile
 CURDIR := c:/Users/lukas/Documents/luktvpl site/minecraft-er-cpp
-# environment
-VSCODE_PIPE_LOGGING = true
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # automatic
@@ -93,9 +91,7 @@ MAKEFILE_LIST :=
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_VERBOSE_LOGGING = true
-# environment
-VSCODE_PID = 17088
+VSCODE_PID = 3344
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -103,7 +99,7 @@ VSCODE_PID = 17088
 # automatic
 <D = $(patsubst %/,%,$(patsubst %\,%,$(dir $<)))
 # environment
-VSCODE_NLS_CONFIG = {"locale":"pl","availableLanguages":{"*":"pl"},"_languagePackId":"993a25eb46a7e0a4aef446c1661beda3.pl","_translationsConfigFile":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\993a25eb46a7e0a4aef446c1661beda3.pl\\tcf.json","_cacheRoot":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\993a25eb46a7e0a4aef446c1661beda3.pl","_resolvedLanguagePackCoreLocation":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\993a25eb46a7e0a4aef446c1661beda3.pl\\30d9c6cd9483b2cc586687151bcbcd635f373630","_corruptedFile":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\993a25eb46a7e0a4aef446c1661beda3.pl\\corrupted.info","_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"pl","availableLanguages":{"*":"pl"},"_languagePackId":"6834e00b516804f436c9b44d43bd8df6.pl","_translationsConfigFile":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\6834e00b516804f436c9b44d43bd8df6.pl\\tcf.json","_cacheRoot":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\6834e00b516804f436c9b44d43bd8df6.pl","_resolvedLanguagePackCoreLocation":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\6834e00b516804f436c9b44d43bd8df6.pl\\92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9","_corruptedFile":"C:\\Users\\lukas\\AppData\\Roaming\\Code\\clp\\6834e00b516804f436c9b44d43bd8df6.pl\\corrupted.info","_languagePackSupport":true}
 # environment
 JD2_HOME = C:\Users\lukas\AppData\Local\JDownloader 2.0
 # environment
@@ -142,8 +138,6 @@ MAKEFILES :=
 PROMPT = $P$G
 # environment
 LOGONSERVER = \\DESKTOP-V1F3DE7
-# environment
-VSCODE_LOG_NATIVE = false
 # environment
 USERNAME = lukas
 # environment
@@ -197,7 +191,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 TEMP = C:\Users\lukas\AppData\Local\Temp
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\83b59789b14c4d609ba91a64aa5ffde3-1.68.1-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\83b59789b14c4d609ba91a64aa5ffde3-1.69.0-main-sock
 # default
 .RECIPEPREFIX := 
 # automatic
@@ -221,7 +215,7 @@ WIX = C:\Program Files (x86)\WiX Toolset v3.11\
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 142 Stepping 9, GenuineIntel
 # variable set hash-table stats:
-# Load=104/1024=10%, Rehash=0, Collisions=9/128=7%
+# Load=101/1024=10%, Rehash=0, Collisions=9/125=7%
 
 # Pattern-specific Variable Values
 
@@ -229,9 +223,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 142 Stepping 9, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/lukas/Documents/luktvpl site/minecraft-er-cpp, mtime 1656768801): 11 files, no impossibilities.
+# . (key c:/Users/lukas/Documents/luktvpl site/minecraft-er-cpp, mtime 1657528136): 13 files, no impossibilities.
 
-# 11 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -284,16 +278,17 @@ GNUmakefile:
 # Load=7/1024=1%, Rehash=0, Collisions=0/16=0%
 # VPATH Search Paths
 
-# No 'vpath' search paths.
+# No 'vp 
+ath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 18 / storage = 156 B / avg = 8 B
-# current buf: size = 8162 B / used = 156 B / count = 18 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 20 / storage = 171 B / avg = 8 B
+# current buf: size = 8162 B / used = 171 B / count = 20 / avg = 8 B
 
-# strcache performance: lookups = 21 / hit rate = 14%
+# strcache performance: lookups = 23 / hit rate = 13%
 # hash-table stats:
-# Load=18/8192=0%, Rehash=0, Collisions=0/21=0%
-# Finished Make data base on Sat Jul 09 17:28:26 2022
+# Load=20/8192=0%, Rehash=0, Collisions=0/23=0%
+# Finished Make data base on Mon Jul 11 11:35:47 2022
 
  

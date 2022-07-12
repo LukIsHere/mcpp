@@ -3,7 +3,8 @@
         {
             "name": "windows-clang-x64",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/libs/dpp/include/*"
             ],
             "defines": [
                 "_DEBUG",

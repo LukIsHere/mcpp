@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <thread>
 using namespace std;
 map<string, string> symbolTable;
 void loadfile()
@@ -19,6 +20,10 @@ void savefile()
     test << "hej" << endl;
     test.close();
 }
+void ccc()
+{
+    cout << "hi" << endl;
+}
 int main()
 {
     srand(time(0));
@@ -32,4 +37,19 @@ int main()
              << it->second // string wartość
              << endl;
     }
+    string am = "pycha";
+    string *ptr = &am;
+    cout << *ptr << endl;
+    map<int, int> m;
+    m[2] = 4;
+    cout << m[2] << endl;
+    thread work(ccc);
+    this_thread::sleep_for(2000ms);
+    cout << this_thread::get_id() << endl;
+    auto funct = ccc;
+    thread worko([]()
+                 { cout << "coł" << endl; });
+    funct();
+    work.join();
+    return 0;
 }
