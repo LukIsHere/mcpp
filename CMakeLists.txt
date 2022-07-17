@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 # Project name, version and description
 project(discord-bot VERSION 1.0 DESCRIPTION "A discord bot")
- 
+
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME}
     main.cpp
     # your other files...
 )
- 
+
 # Linking libraries
 target_link_libraries(${PROJECT_NAME}
     dpp

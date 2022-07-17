@@ -2,6 +2,7 @@
 #include <fstream>
 #include <map>
 #include <thread>
+#include <chrono>
 using namespace std;
 map<string, string> symbolTable;
 void loadfile()
@@ -24,6 +25,10 @@ void ccc()
 {
     cout << "hi" << endl;
 }
+void fx(int a){
+    this_thread::sleep_for(10s);
+    cout << "ok" <<endl;
+}
 int main()
 {
     srand(time(0));
@@ -38,18 +43,11 @@ int main()
              << endl;
     }
     string am = "pycha";
-    string *ptr = &am;
+    string *ptr;
+    ptr = &am;
     cout << *ptr << endl;
     map<int, int> m;
     m[2] = 4;
     cout << m[2] << endl;
-    thread work(ccc);
-    this_thread::sleep_for(2000ms);
-    cout << this_thread::get_id() << endl;
-    auto funct = ccc;
-    thread worko([]()
-                 { cout << "coł" << endl; });
-    funct();
-    work.join();
     return 0;
 }

@@ -31,6 +31,42 @@ void print(char text)
 {
     cout << btos(text) << endl;
 }
+//emote taki myk wokół dpp
+class emote{
+    public:
+    string r;
+    emote(){
+
+    }
+    emote(string emoji){
+        string out = "";
+        for(int i = 0;i<emoji.length();i++){
+            if(emoji.at(i)!='<'&&emoji.at(i)!='>') out +=emoji.at(i);
+        }
+        r = out;
+    }
+    emote(dpp::emoji emoji){
+        string out = ":";
+        out.append(emoji.name);
+        out+=':';
+        out.append(to_string(emoji.id));
+        r = out;
+    }
+};
+string getR(string emoji){
+    string out = "";
+    for(int i = 0;i<emoji.length();i++){
+        if(emoji.at(i)!='<'&&emoji.at(i)!='>') out +=emoji.at(i);
+    }
+    return out;
+}
+string getR(dpp::emoji emoji){
+    string out = ":";
+    out.append(emoji.name);
+    out+=':';
+    out.append(to_string(emoji.id));
+    return out;
+}
 // kolory (terminal)
 map<string, string> cm = {
     {"red", "\u001b[31m"},
@@ -59,6 +95,9 @@ int64_t getid(string id)
         out = stoi(charr) * te + out;
     }
     return 691032155643445359;
+}
+int64_t stoID(dpp::snowflake s){
+    return getid(to_string(s));
 }
 class lista
 {
@@ -495,8 +534,10 @@ public:
     int id;
     string name;
     int cost;
+    emote r;
     skine(string emojii, int idi, string namei, int costi)
     {
+        r = emote(emojii);
         emoji = emojii;
         id = idi;
         name = namei;
@@ -516,55 +557,59 @@ public:
     string emoji;
     string cout;
     int points;
-    bool unbraekabele;
     string name;
-    blok(int bid, string bemoji, string bcout, int bpoints, bool bunbreakable, string bname)
+    string reaction;
+    emote r;
+    lista prop;
+    blok(int bid, string bemoji, string bcout, int bpoints, string bname,lista propd=lista("[]"))
     {
+        r = emote(bemoji);
+        prop = propd;
         bn.insert(pair<string, int>(bname, bid));
         id = bid;
         emoji = bemoji;
         name = bname;
         cout = bcout;
         points = bpoints;
-        unbraekabele = bunbreakable;
+        string out = "";
+        
     }
 };
-int free2walk[2] = {2, 32};
 const blok blocks[34] = {
-    blok(0, "<:00:976014562996391936>", "\u001b[42;1mg", 0, false, "grass"),
-    blok(1, "<:01:976014584836128798>", "\u001b[40;2ms", 0, false, "stone"),
-    blok(2, "<:02:976014603182014514>", "\u001b[44ma", 0, false, "air"),
-    blok(3, "<:03:986301020386758656>", "\u001b[41;1mc", 500, false, "cheast"),
-    blok(4, "<:04:976025190741966920>", "\u001b[41;1md", 0, false, "dirt"),
-    blok(5, "<:05:976028310289145916>", "\u001b[41mw", 0, false, "wood"),
-    blok(6, "<:06:976028821142794240>", "\u001b[42;1ml", 0, false, "leaves"),
-    blok(7, "<:07:976747069731667988>", "\u001b[40mc", 5, false, "coal"),
-    blok(8, "<:08:976747112123486239>", "\u001b[44md", 100, false, "diamond"),
-    blok(9, "<:09:976747136509173791>", "\u001b[43mg", 20, false, "gold"),
-    blok(10, "<:10:976747165869297665>", "\u001b[41mn", 0, false, "netherrack"),
-    blok(11, "<:11:976747199310491658>", "\u001b[40mc", 5, false, "coald"),
-    blok(12, "<:12:976747224799272970>", "\u001b[47mi", 25, false, "irond"),
-    blok(13, "<:13:976747252309717093>", "\u001b[42me", 200, false, "emeraldd"),
-    blok(14, "<:14:976747278100475916>", "\u001b[47mi", 25, false, "iron"),
-    blok(15, "<:15:976747301110444042>", "\u001b[41mr", 7, false, "redstone"),
-    blok(16, "<:16:976747345008025620>", "\u001b[40;1md", 0, false, "deepslate"),
-    blok(17, "<:17:976747365719486494>", "\u001b[43mg", 20, false, "goldn"),
-    blok(18, "<:18:976747395742326794>", "\u001b[44;1ml", 5, false, "lapis"),
-    blok(19, "<:19:976747421013012490>", "\u001b[42me", 200, false, "emerald"),
-    blok(20, "<:20:976747440675905550>", "\u001b[47;1mq", 20, false, "quartz"),
-    blok(21, "<:21:976747460452036618>", " \u001b[45mc", 10, false, "copperd"),
-    blok(22, "<:22:976747483327778816>", "\u001b[44;1ml", 5, false, "lapisd"),
-    blok(23, "<:23:976747504311877643>", "\u001b[43mg", 20, false, "goldd"),
-    blok(24, "<:24:976747529930670110>", "\u001b[45mc", 10, false, "copper"),
-    blok(25, "<:25:976747546405920769>", "\u001b[40mb", 0, true, "bedrock"),
-    blok(26, "<:26:976747566303686666>", "\u001b[41;1md", 0, false, "debris"),
-    blok(27, "<:27:976747582762151976>", "\u001b[40;1mo", 0, false, "obsidian"),
-    blok(28, "<:28:976747598763417620>", "\u001b[44md", 100, false, "diamondd"),
-    blok(29, "<:29:976747620594749470>", "\u001b[41mr", 7, false, "redstoned"),
-    blok(30, "<:30:976752550713892885>", "\u001b[40mb", 0, false, "black"),
-    blok(31, "<:31:976765562275364934>", "\u001b[41;1mf", 0, false, "fox"),
-    blok(32, "<:32:980055020315758622>", "\u001b[44;1mw", 0, false, "water"),
-    blok(33, "<:33:985931497489973248>", "\u001b[40mb", 0, true, "barrier")};
+    blok(0, "<:00:976014562996391936>", "\u001b[42;1mg", 0, "grass"),
+    blok(1, "<:01:976014584836128798>", "\u001b[40;2ms", 0, "stone"),
+    blok(2, "<:02:976014603182014514>", "\u001b[44ma", 0, "air",lista("[f2w]")),
+    blok(3, "<:03:986301020386758656>", "\u001b[41;1mc", 500, "cheast"),
+    blok(4, "<:04:976025190741966920>", "\u001b[41;1md", 0, "dirt"),
+    blok(5, "<:05:976028310289145916>", "\u001b[41mw", 0, "wood"),
+    blok(6, "<:06:976028821142794240>", "\u001b[42;1ml", 0, "leaves"),
+    blok(7, "<:07:976747069731667988>", "\u001b[40mc", 5, "coal"),
+    blok(8, "<:08:976747112123486239>", "\u001b[44md", 100, "diamond"),
+    blok(9, "<:09:976747136509173791>", "\u001b[43mg", 20, "gold"),
+    blok(10, "<:10:976747165869297665>", "\u001b[41mn", 0, "netherrack"),
+    blok(11, "<:11:976747199310491658>", "\u001b[40mc", 5, "coald"),
+    blok(12, "<:12:976747224799272970>", "\u001b[47mi", 25, "irond"),
+    blok(13, "<:13:976747252309717093>", "\u001b[42me", 200, "emeraldd"),
+    blok(14, "<:14:976747278100475916>", "\u001b[47mi", 25, "iron"),
+    blok(15, "<:15:976747301110444042>", "\u001b[41mr", 7, "redstone"),
+    blok(16, "<:16:976747345008025620>", "\u001b[40;1md", 0, "deepslate"),
+    blok(17, "<:17:976747365719486494>", "\u001b[43mg", 20, "goldn"),
+    blok(18, "<:18:976747395742326794>", "\u001b[44;1ml", 5, "lapis"),
+    blok(19, "<:19:976747421013012490>", "\u001b[42me", 200, "emerald"),
+    blok(20, "<:20:976747440675905550>", "\u001b[47;1mq", 20, "quartz"),
+    blok(21, "<:21:976747460452036618>", " \u001b[45mc", 10, "copperd"),
+    blok(22, "<:22:976747483327778816>", "\u001b[44;1ml", 5, "lapisd"),
+    blok(23, "<:23:976747504311877643>", "\u001b[43mg", 20, "goldd"),
+    blok(24, "<:24:976747529930670110>", "\u001b[45mc", 10, "copper"),
+    blok(25, "<:25:976747546405920769>", "\u001b[40mb", 0, "bedrock",lista("[unbreakable]")),
+    blok(26, "<:26:976747566303686666>", "\u001b[41;1md", 0, "debris"),
+    blok(27, "<:27:976747582762151976>", "\u001b[40;1mo", 0, "obsidian"),
+    blok(28, "<:28:976747598763417620>", "\u001b[44md", 100, "diamondd"),
+    blok(29, "<:29:976747620594749470>", "\u001b[41mr", 7, "redstoned"),
+    blok(30, "<:30:976752550713892885>", "\u001b[40mb", 0, "black"),
+    blok(31, "<:31:976765562275364934>", "\u001b[41;1mf", 0, "fox"),
+    blok(32, "<:32:980055020315758622>", "\u001b[44;1mw", 0, "water",lista("[f2w]")),
+    blok(33, "<:33:985931497489973248>", "\u001b[40mb", 0, "barrier",lista("[unbreakable]"))};
 // rudy dane
 int rud[6][8][2] =
     {
@@ -618,137 +663,166 @@ ruda rudy[9] = {
 class instancja
 {
 public:
-    int x[4] = {32, 32, 32, 32};
-    int y[4] = {128, 128, 128, 128};
-    int pcount;
-    int mapa[192][64];          // id bloków
-    int skin[4] = {0, 0, 0, 0}; // id skinów
+    int x = 32;
+    int y = 128;
+    int  mapa[192][64];          // id bloków
+    int skin = 0; // id skinów
     int score = 0;
-    int msgs[4];
-    int players[4];
     bool end = false;
-    instancja(int pcountt, int pskin[4])
+    bool valid = false;
+    int type = 1;
+    int height;
+    int width;
+    int moves = 0;
+    int64_t user;
+    int durability = 999999;
+    lista challanges;
+    dpp::message msg;
+    instancja(){
+        valid = false;
+        end = true;
+    }
+    instancja(int64_t userd,int skind = 0,int typed=1,int durabilityd=99999,lista challangesd=lista())//0-own (9x9) 1-normal 
     { // konstruktor
-        pcount = pcountt;
-        for (int i = 0; i < 4; ++i)
-        {
-            skin[i] = pskin[i];
-        };
-
-        // mapa[y][x]
-        // powietrze
-        for (int iy = 0; iy < 192; ++iy)
-        {
+        valid = true;
+        user = userd;
+        challanges = challangesd;
+        durability = durabilityd;
+        skin = skind;
+        type = typed;
+        switch(typed){
+            case 0:
+            height = 9;
+            width = 9;
+            break;
+            case 1:
+            height = 192;
+            width = 64;
+            // powietrze
+            for (int iy = 0; iy < 192; ++iy)
+            {
+                for (int ix = 0; ix < 64; ++ix)
+                {
+                    int iiy = 191 - iy;
+                    SetBlock(ix, iy, 2);
+                }
+            }
+            // bedrock 0-7
+            int help = random(7);
+            int help2 = 0;
             for (int ix = 0; ix < 64; ++ix)
             {
-                int iiy = 191 - iy;
-                SetBlock(ix, iy, 2);
-            }
-        }
-        // bedrock 0-7
-        int help = random(7);
-        int help2 = 0;
-        for (int ix = 0; ix < 64; ++ix)
-        {
-            help2 = random(5);
-            if (help2 == 1 && help + 2 <= 7)
-                help = help + 2;
-            if (help2 == 2 && help + 1 <= 7)
-                help = help + 1;
-            if (help2 == 1 && help - 2 >= 1)
-                help = help - 2;
-            if (help2 == 1 && help - 1 >= 1)
-                help = help - 1;
-            for (int iy = 0; iy < help; ++iy)
-            {
-
-                SetBlock(ix, iy, bn["bedrock"]);
-            }
-        }
-        // deepslate
-        help = random(7);
-        for (int ix = 0; ix < 64; ++ix)
-        {
-            help2 = random(7);
-            if (help2 == 2 && help + 1 <= 7)
-                help = help + 1;
-            if (help2 == 1 && help - 1 >= 1)
-                help = help - 1;
-            for (int iy = 0; iy < help + 64; ++iy)
-            {
-                if (GetBlockID(ix, iy) == 2)
-                    SetBlock(ix, iy, bn["deepslate"]);
-            }
-        }
-        // stone + trawa +  drzewa +  woda + spawn
-        help = random(24);
-        for (int ix = 0; ix < 64; ++ix)
-        {
-            help2 = random(7);
-            if (help2 == 2 && help + 1 <= 24)
-                help = help + 1;
-            if (help2 == 1 && help - 1 >= 1)
-                help = help - 1;
-            for (int iy = 64; iy < help + 128; ++iy)
-            {
-                if (GetBlockID(ix, iy) == 2)
-                    SetBlock(ix, iy, bn["stone"]);
-            }
-            int fixed = help + 128;
-            if (fixed > 135)
-            {
-                SetBlock(ix, fixed + 0, bn["dirt"]);
-                SetBlock(ix, fixed + 1, bn["dirt"]);
-                SetBlock(ix, fixed + 2, bn["grass"]);
-                if (ix == 32)
-                    SetSpawn(x[0], fixed + 3);
-                if (random(9) == 7)
+                help2 = random(5);
+                if (help2 == 1 && help + 2 <= 7)
+                    help = help + 2;
+                if (help2 == 2 && help + 1 <= 7)
+                    help = help + 1;
+                if (help2 == 1 && help - 2 >= 1)
+                    help = help - 2;
+                if (help2 == 1 && help - 1 >= 1)
+                    help = help - 1;
+                for (int iy = 0; iy < help; ++iy)
                 {
-                    SetBlock(ix, fixed + 3, bn["wood"]);
-                    SetBlock(ix, fixed + 4, bn["leaves"]);
-                    SetBlock(ix - 1, fixed + 4, bn["leaves"]);
-                    SetBlock(ix + 1, fixed + 4, bn["leaves"]);
-                    SetBlock(ix, fixed + 5, bn["leaves"]);
-                    if (ix == 32)
-                        SetSpawn(x[0], fixed + 6);
+
+                    SetBlock(ix, iy, bn["bedrock"]);
                 }
             }
-            else
+            // deepslate
+            help = random(7);
+            for (int ix = 0; ix < 64; ++ix)
             {
-                SetBlock(ix, fixed + 0, bn["dirt"]);
-                SetBlock(ix, fixed + 1, bn["dirt"]);
-                SetBlock(ix, fixed + 2, bn["dirt"]);
-                if (ix == 32)
-                    SetSpawn(x[0], fixed + 3);
-                for (int iy = 128; iy < 135 + 4; ++iy)
+                help2 = random(7);
+                if (help2 == 2 && help + 1 <= 7)
+                    help = help + 1;
+                if (help2 == 1 && help - 1 >= 1)
+                    help = help - 1;
+                for (int iy = 0; iy < help + 64; ++iy)
                 {
                     if (GetBlockID(ix, iy) == 2)
-                        SetBlock(ix, iy, bn["water"]);
+                        SetBlock(ix, iy, bn["deepslate"]);
                 }
             }
-        }
-        // rudy
-        for (int i = 0; i < 9; ++i)
-        {
-            for (int ir = 0; ir < rudy[i].count; ++ir)
+            // stone + trawa +  drzewa +  woda + spawn
+            help = random(24);
+            for (int ix = 0; ix < 64; ++ix)
             {
-                int tx = random(62);
-                int ty = random(rudy[i].ymax - rudy[i].ymin) + rudy[i].ymin;
-                int v = rudy[i].variants[random(5) - 1];
-                for (int pi = 0; pi < 8; ++pi)
+                help2 = random(7);
+                if (help2 == 2 && help + 1 <= 24)
+                    help = help + 1;
+                if (help2 == 1 && help - 1 >= 1)
+                    help = help - 1;
+                for (int iy = 64; iy < help + 128; ++iy)
                 {
-                    int ttx = rud[v][pi][0] + tx;
-                    int tty = rud[v][pi][1] + ty;
-                    if (GetBlockID(ttx, tty) == bn["stone"])
-                        SetBlock(ttx, tty, rudy[i].idn);
-                    if (GetBlockID(ttx, tty) == bn["deepslate"])
-                        SetBlock(ttx, tty, rudy[i].idd);
+                    if (GetBlockID(ix, iy) == 2)
+                        SetBlock(ix, iy, bn["stone"]);
+                }
+                int fixed = help + 128;
+                if (fixed > 135)
+                {
+                    SetBlock(ix, fixed + 0, bn["dirt"]);
+                    SetBlock(ix, fixed + 1, bn["dirt"]);
+                    SetBlock(ix, fixed + 2, bn["grass"]);
+                    if (ix == 32)
+                        SetSpawn(x, fixed + 3);
+                    if (random(9) == 7)
+                    {
+                        SetBlock(ix, fixed + 3, bn["wood"]);
+                        SetBlock(ix, fixed + 4, bn["leaves"]);
+                        SetBlock(ix - 1, fixed + 4, bn["leaves"]);
+                        SetBlock(ix + 1, fixed + 4, bn["leaves"]);
+                        SetBlock(ix, fixed + 5, bn["leaves"]);
+                        if (ix == 32)
+                            SetSpawn(x, fixed + 6);
+                    }
+                }
+                else
+                {
+                    SetBlock(ix, fixed + 0, bn["dirt"]);
+                    SetBlock(ix, fixed + 1, bn["dirt"]);
+                    SetBlock(ix, fixed + 2, bn["dirt"]);
+                    if (ix == 32)
+                        SetSpawn(x, fixed + 3);
+                    for (int iy = 128; iy < 135 + 4; ++iy)
+                    {
+                        if (GetBlockID(ix, iy) == 2)
+                            SetBlock(ix, iy, bn["water"]);
+                    }
                 }
             }
+            // rudy
+            for (int i = 0; i < 9; ++i)
+            {
+                for (int ir = 0; ir < rudy[i].count; ++ir)
+                {
+                    int tx = random(62);
+                    int ty = random(rudy[i].ymax - rudy[i].ymin) + rudy[i].ymin;
+                    int v = rudy[i].variants[random(5) - 1];
+                    for (int pi = 0; pi < 8; ++pi)
+                    {
+                        int ttx = rud[v][pi][0] + tx;
+                        int tty = rud[v][pi][1] + ty;
+                        if (GetBlockID(ttx, tty) == bn["stone"])
+                            SetBlock(ttx, tty, rudy[i].idn);
+                        if (GetBlockID(ttx, tty) == bn["deepslate"])
+                            SetBlock(ttx, tty, rudy[i].idd);
+                    }
+                }
+            }
+        break;
         }
         // render konsola
         // conout();
         // cout << DcOutp(0);
+    }
+    void setMSG(dpp::message msgd){
+        msg = msgd;
+    }
+    void build(string mapS){
+        //to-do
+    }
+    string getbuildS(){
+        //to-do
+        return "non";
     }
     void finish()
     {
@@ -758,12 +832,13 @@ public:
     {
         for (int i = 0; i < 4; ++i)
         {
-            x[i] = xv;
-            y[i] = yv;
+            x = xv;
+            y = yv;
         };
     }
     void SetBlock(int x, int y, int block)
     {
+        if(x<0||x>=width||y<0||y>=height) return;
         try
         {
             int b = block + 1;
@@ -775,6 +850,7 @@ public:
     }
     blok GetBlock(int x, int y)
     {
+        if(x<0||x>=width||y<0||y>=height) return blocks[33];
         try
         {
             if (mapa[y][x] == 0)
@@ -789,6 +865,7 @@ public:
     }
     int GetBlockID(int x, int y)
     {
+        if(x<0||x>=width||y<0||y>=height) return 33;
         try
         {
             if (mapa[y][x] == 0)
@@ -826,7 +903,8 @@ public:
             {
 
                 int iiy = yl + 4 - iy;
-                if (ifPlayer(xl + ix - 4, iiy))
+                int iix = xl + ix - 4;
+                if (iix==x&&iiy==y)
                 {
                     cout << "\u001b[46mp";
                 }
@@ -840,27 +918,28 @@ public:
         }
         cout << endl;
     }
-    void conoutsp(int playerd)
+    void conoutsp()
     {
-        conouts(x[playerd], y[playerd]);
+        conouts(x, y);
     }
     // move
-    void move(int xm, int ym, int player)
+    void move(int xm, int ym)
     {
-        if (!GetBlock(x[player] + xm, y[player] + ym).unbraekabele)
+        if (!GetBlock(x + xm, y + ym).prop.include("unbreakable"))
         {
-            x[player] += xm;
-            y[player] += ym;
-            score = score + GetBlock(x[player], y[player]).points;
-            if (GetBlock(x[player], y[player]).id != bn["water"])
+            moves++;
+            x += xm;
+            y += ym;
+            score = score + GetBlock(x, y).points;
+            if (!GetBlock(x, y).prop.include("f2w"))
             {
-                SetBlock(x[player], y[player], bn["air"]);
+                SetBlock(x, y, bn["air"]);
             }
-            if (GetBlock(x[player], y[player] - 1).id == bn["air"] || GetBlock(x[player], y[player] - 1).id == bn["water"])
+            if (GetBlock(x, y - 1).prop.include("f2w"))
             {
-                move(0, -1, player);
+                move(0, -1);
             }
-            if (GetBlock(x[player], y[player] - 1).id == bn["bedrock"])
+            if (GetBlock(x, y - 1).id == bn["bedrock"])
                 finish();
         }
     }
@@ -873,9 +952,9 @@ public:
             {
                 int iiy = yl + 4 - iy;
                 int iix = xl + ix - 4;
-                if (ifPlayer(iix, iiy))
+                if (iix==x&&iiy==y)
                 {
-                    out.append(getPlayerSkin(iix, iiy).emoji);
+                    out.append(skiny[skin].emoji);
                 }
                 else
                 {
@@ -887,40 +966,20 @@ public:
         out.append("\n");
         return out;
     }
-    string DcOutp(int player)
+    string DcOutp()
     {
-        return DcOut(x[player], y[player]);
+        return DcOut(x, y);
     }
-    bool ifPlayer(int cx, int cy)
-    {
-        if (pcount == 1)
-            return (x[0] == cx && y[0] == cy);
-        if (pcount == 2)
-            return ((x[0] == cx && y[0] == cy) || (x[1] == cx && y[1] == cy));
-        if (pcount == 3)
-            return ((x[0] == cx && y[0] == cy) || (x[1] == cx && y[1] == cy) || (x[2] == cx && y[2] == cy));
-        if (pcount == 4)
-            return ((x[0] == cx && y[0] == cy) || (x[1] == cx && y[1] == cy) || (x[2] == cx && y[2] == cy) || (x[3] == cx && y[3] == cy));
-
-        return false;
-    }
-    skine getPlayerSkin(int px, int py)
-    {
-        if (x[0] == px && y[0] == py)
-            return skiny[skin[0]];
-        if (x[1] == px && y[1] == py)
-            return skiny[skin[1]];
-        if (x[2] == px && y[2] == py)
-            return skiny[skin[2]];
-        if (x[3] == px && y[3] == py)
-            return skiny[skin[3]];
-        return skiny[0];
+    string DcOutEnd(){
+        string out = "Koniec Gry. zdobyte punkty : ";
+        out.append(to_string(score));
+        return out;
     }
     // discord out
     // msg container - map
     // player container - map (in future)
 };
-map<int, instancja> sescje;
+map<int64_t, instancja> sescje;
 // dane użytkowników load/save
 map<int64_t, user> usersData;
 void loadUSERS()
@@ -951,22 +1010,93 @@ void saveUSERS()
 void reloadRank()
 {
 }
+//nwm
+string l = "l";
+string r = "r";
+string d = "d";
+string stop = "stop";
 // główna funkcja
+lista uiEmoji = lista("[r_,l_,d_,stop]");
 int main()
 {
-    srand((unsigned int)time(0));
+    srand(time(0));
     string tt;
     ifstream test2("token.txt");
     string token;
     getline(test2, token);
-    dpp::cluster bot(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_message_reactions);
+    test2.close();
+    instancja(0);
+    
+    dpp::cluster bot(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_integrations);
     bot.on_log(dpp::utility::cout_logger());
     bot.on_message_create([&bot](const dpp::message_create_t &event)
                           {
         if(event.msg.content == ".test"){
-            int d[4] = {0,0,0,0};
-            event.send(instancja(1,d).DcOutp(0));
-        } });
+            const int64_t sender = int64_t(event.msg.author.id);
+            int64_t msg = int64_t(event.msg.id);
+            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender)));
+            dpp::message mess = dpp::message("zacząć grę?");
+            dpp::component btns = dpp::component();
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("✅").set_style(dpp::cos_primary).set_id("start"));
+            event.reply(mess);
+            sescje[sender].setMSG(mess);
+            }});
+    bot.on_button_click([&bot](const dpp::button_click_t &event){
+        if(event.custom_id=="start"){
+            const int64_t sender = int64_t(event.command.usr.id);
+            dpp::message mess = dpp::message(event.command.channel_id,sescje[sender].DcOutp());
+            dpp::component btns = dpp::component();
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🔽").set_style(dpp::cos_primary).set_id(d));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("▶️").set_style(dpp::cos_primary).set_id(r));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🛑").set_style(dpp::cos_danger).set_id(stop));
+            mess.add_component(btns);
+            event.reply(mess);
+            mess.set_channel_id(event.command.channel_id);
+            sescje[sender].setMSG(mess);
+        }
+        if(sescje[event.command.member.user_id].valid&&sescje[event.command.member.user_id].msg.channel_id==event.command.channel_id){
+            instancja *game = &(sescje[event.command.member.user_id]);
+            cout << event.custom_id << endl;
+            if(event.custom_id=="l")game->move(-1,0);
+            if(event.custom_id=="r")game->move(1,0);
+            if(event.custom_id=="d")game->move(0,-1);
+            if(event.custom_id=="stop")game->finish();
+            if(!game->end){
+                event.reply(game->msg.set_content(game->DcOutp()));
+                bot.message_delete(event.command.message_id,event.command.channel_id);
+
+            }else{
+                
+                event.reply(game->msg.set_content(game->DcOutEnd()));
+                bot.message_delete(event.command.message_id,event.command.channel_id);
+                sescje.erase(event.command.member.user_id);
+            }
+        }
+
+    });
+    bot.on_slashcommand([](const dpp::slashcommand_t& event) {
+         if (event.command.get_command_name() == "test") {
+            const int64_t sender = int64_t(event.command.usr.id);
+            int64_t msg = int64_t(event.command.channel_id);
+            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender)));
+            dpp::message mess = dpp::message("zacząć grę?");
+            dpp::component btns = dpp::component();
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("✅").set_style(dpp::cos_primary).set_id("start"));
+            mess.add_component(btns);
+            event.reply(mess);
+            sescje[sender].setMSG(mess);
+        }
+    });
+ 
+    bot.on_ready([&bot](const dpp::ready_t& event) {
+        if (dpp::run_once<struct register_bot_commands>()) {
+            bot.global_command_create(
+                dpp::slashcommand("test", "nie tykać", bot.me.id)
+            );
+        }
+    });
+    
     bot.start(false);
     loadUSERS();
 }
