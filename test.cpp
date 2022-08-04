@@ -33,7 +33,8 @@ int main()
 {
     srand(time(0));
     loadfile();
-    symbolTable.insert(pair<string, string>("hi", "hello"));
+    symbolTable["hi"] =  "hello";
+    symbolTable["hsi"] = "hellsso";
     map<string, string>::iterator it;
     for (it = symbolTable.begin(); it != symbolTable.end(); it++)
     {

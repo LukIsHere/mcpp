@@ -3,9 +3,12 @@
 #include <fstream>
 #include <string>
 #include <thread>
+#include <chrono>
 #include <dpp/dpp.h>
 using namespace std;
 // print
+
+//I'm sorry i know it's not pyhton but it's easyer than cout << something << endl; every time i want to log value
 string btos(bool value)
 {
     if (value == true)
@@ -31,6 +34,9 @@ void print(char text)
 {
     cout << btos(text) << endl;
 }
+
+
+
 //emote taki myk wokół dpp
 class emote{
     public:
@@ -67,6 +73,8 @@ string getR(dpp::emoji emoji){
     out.append(to_string(emoji.id));
     return out;
 }
+//reanking wpis
+
 // kolory (terminal)
 map<string, string> cm = {
     {"red", "\u001b[31m"},
@@ -88,13 +96,14 @@ int64_t getid(string id)
 {
     int64_t out = 0;
     int64_t te = 1;
-    for (int i = 0; 18 < i; ++i)
+    for (int i = 0; 18 > i; ++i)
     {
         string charr;
-        charr.push_back(id.at(17 - 1));
+        charr.push_back(id.at(17 - i));
         out = stoi(charr) * te + out;
+        te = te*10;
     }
-    return 691032155643445359;
+    return out;
 }
 int64_t stoID(dpp::snowflake s){
     return getid(to_string(s));
@@ -810,10 +819,12 @@ public:
             }
         break;
         }
+        
         // render konsola
         // conout();
         // cout << DcOutp(0);
     }
+    
     void setMSG(dpp::message msgd){
         msg = msgd;
     }
@@ -971,7 +982,9 @@ public:
         return DcOut(x, y);
     }
     string DcOutEnd(){
-        string out = "Koniec Gry. zdobyte punkty : ";
+        string out = "Koniec Gry.<@";
+        out.append(to_string(user));
+        out.append(">zdobył punktów : ");
         out.append(to_string(score));
         return out;
     }
@@ -982,6 +995,51 @@ public:
 map<int64_t, instancja> sescje;
 // dane użytkowników load/save
 map<int64_t, user> usersData;
+//ranking
+class rankk{
+    public:
+    int s = 0;
+    string n = "brak";
+    rankk(){
+
+    }
+    rankk(int score,string name){
+        s = score;
+        n = name;
+    }
+    string st(){
+        string out = ". ";
+        out.append(n);
+        out.append(" : ");
+        out.append(to_string(s));
+        return out;
+    }
+};
+map<int,rankk> ranking;//0-24 ranking 25-help spot
+void addToRank(rankk usr){// 2000
+    if(ranking[24].s<usr.s){
+        int pl = 24;//set minimum spot
+        for(int i = 23;0<=i;i--){
+            if(ranking[i].s<usr.s)pl=i;//if heigher set spot higher
+        }
+        for(int i = 24;i>=pl;i--){ //loop from 24 to place
+            ranking[i+1] = ranking[i]; //move lover in rank
+            if(i==pl){
+                ranking[pl] = usr; //set in place
+            }
+        }
+        
+    }   
+}
+string logRank(){
+    string out;
+    for(int i = 0;i<25;i++){
+        out.append(to_string(i+1));
+        out.append(ranking[i].st());
+        out.append("\n");
+    }
+    return out;
+}
 void loadUSERS()
 {
     string tt;
@@ -989,10 +1047,13 @@ void loadUSERS()
     while (getline(test2, tt))
     {
         user u = user(tt);
-        u.logout();
-        usersData.insert(pair<int64_t, user>(u.id, u));
+        cout << u.id << endl;
+        print(u.getString());
+        usersData[u.id] = u;
+        addToRank(rankk(u.score,u.nick));
     }
     test2.close();
+    logRank();
 }
 void saveUSERS()
 {
@@ -1000,16 +1061,18 @@ void saveUSERS()
     map<int64_t, user>::iterator it;
     for (it = usersData.begin(); it != usersData.end(); it++)
     {
-        test
-            << it->second.getString() << endl;
+        cout << it->second.getString() << endl;
+        test << it->second.getString() << endl;
+        
     }
-    // test << "691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}" << endl;
     test.close();
 }
 // ranking
-void reloadRank()
-{
+void gend(int64_t usr,int score){
+
 }
+
+
 //nwm
 string l = "l";
 string r = "r";
@@ -1019,31 +1082,44 @@ string stop = "stop";
 lista uiEmoji = lista("[r_,l_,d_,stop]");
 int main()
 {
+    loadUSERS();
     srand(time(0));
+    print(logRank());
     string tt;
     ifstream test2("token.txt");
     string token;
     getline(test2, token);
     test2.close();
-    instancja(0);
     
-    dpp::cluster bot(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_integrations);
+    dpp::cluster bot = dpp::cluster(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_integrations);
     bot.on_log(dpp::utility::cout_logger());
-    bot.on_message_create([&bot](const dpp::message_create_t &event)
-                          {
-        if(event.msg.content == ".test"){
-            const int64_t sender = int64_t(event.msg.author.id);
-            int64_t msg = int64_t(event.msg.id);
-            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender)));
-            dpp::message mess = dpp::message("zacząć grę?");
-            dpp::component btns = dpp::component();
-            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("✅").set_style(dpp::cos_primary).set_id("start"));
-            event.reply(mess);
-            sescje[sender].setMSG(mess);
-            }});
+    bot.on_message_create([&bot](const dpp::message_create_t &event){
+
+    });
     bot.on_button_click([&bot](const dpp::button_click_t &event){
-        if(event.custom_id=="start"){
+        int64_t u = event.command.member.user_id;
+        if(sescje[u].valid&&sescje[u].msg.channel_id==event.command.channel_id&&sescje[u].msg.id == event.command.msg.id){
+            instancja *game = &(sescje[event.command.member.user_id]);
+            //cout << event.custom_id << endl;
+            if(event.custom_id=="l")game->move(-1,0);
+            if(event.custom_id=="r")game->move(1,0);
+            if(event.custom_id=="d")game->move(0,-1);
+            if(event.custom_id=="stop")game->finish();
+            if(!game->end){
+                event.reply(dpp::ir_update_message,game->msg.set_content(game->DcOutp()));
+
+            }else{
+                
+                event.reply(dpp::ir_update_message,game->msg.set_content(game->DcOutEnd()));
+                sescje.erase(event.command.member.user_id);
+            }
+        }
+
+    });
+    bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
+         if (event.command.get_command_name() == "test") {
             const int64_t sender = int64_t(event.command.usr.id);
+            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,0,1,9999,lista())));
             dpp::message mess = dpp::message(event.command.channel_id,sescje[sender].DcOutp());
             dpp::component btns = dpp::component();
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
@@ -1051,41 +1127,17 @@ int main()
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("▶️").set_style(dpp::cos_primary).set_id(r));
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🛑").set_style(dpp::cos_danger).set_id(stop));
             mess.add_component(btns);
-            event.reply(mess);
             mess.set_channel_id(event.command.channel_id);
+            mess = bot.message_create_sync(mess);
             sescje[sender].setMSG(mess);
-        }
-        if(sescje[event.command.member.user_id].valid&&sescje[event.command.member.user_id].msg.channel_id==event.command.channel_id){
-            instancja *game = &(sescje[event.command.member.user_id]);
-            cout << event.custom_id << endl;
-            if(event.custom_id=="l")game->move(-1,0);
-            if(event.custom_id=="r")game->move(1,0);
-            if(event.custom_id=="d")game->move(0,-1);
-            if(event.custom_id=="stop")game->finish();
-            if(!game->end){
-                event.reply(game->msg.set_content(game->DcOutp()));
-                bot.message_delete(event.command.message_id,event.command.channel_id);
-
-            }else{
-                
-                event.reply(game->msg.set_content(game->DcOutEnd()));
-                bot.message_delete(event.command.message_id,event.command.channel_id);
-                sescje.erase(event.command.member.user_id);
-            }
-        }
-
-    });
-    bot.on_slashcommand([](const dpp::slashcommand_t& event) {
-         if (event.command.get_command_name() == "test") {
-            const int64_t sender = int64_t(event.command.usr.id);
-            int64_t msg = int64_t(event.command.channel_id);
-            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender)));
-            dpp::message mess = dpp::message("zacząć grę?");
-            dpp::component btns = dpp::component();
-            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("✅").set_style(dpp::cos_primary).set_id("start"));
-            mess.add_component(btns);
-            event.reply(mess);
-            sescje[sender].setMSG(mess);
+            thread end([&bot,&sender](){
+                this_thread::sleep_for(chrono::minutes(5));
+                bot.message_edit(sescje[sender].msg.set_content(sescje[sender].DcOutEnd()));
+                sescje.erase(sender);
+            });
+            end.detach();
+            
+            
         }
     });
  
@@ -1096,7 +1148,7 @@ int main()
             );
         }
     });
-    
+    saveUSERS();
     bot.start(false);
-    loadUSERS();
+    
 }
