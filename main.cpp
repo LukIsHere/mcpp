@@ -434,7 +434,7 @@ public:
     int score;
     string date;
     int money;
-    int valid = 1;
+    int valid = 0;
     bool empty = false;
     metaData meta = metaData("{}");
     user()
@@ -451,6 +451,7 @@ public:
             score = scored;
             date = dated;
             money = 0;
+            valid = 1;
         }
         catch (const std::exception &e)
         {
@@ -467,6 +468,7 @@ public:
             date = dated;
             money = moneyd;
             meta = metaData(metad);
+            valid = 1;
         }
         catch (const std::exception &e)
         {
@@ -504,9 +506,11 @@ public:
             date = datta[3];
             money = stoi(datta[4]);
             meta = metaData(datta[5]);
+            valid = 1;
         }
         catch (...)
         {
+            valid = 0;
             cout << "błąd użytkownika : " << data << endl;
         }
     }
@@ -672,6 +676,7 @@ ruda rudy[9] = {
 class instancja
 {
 public:
+    int id = 1000;
     int x = 32;
     int y = 128;
     int  mapa[192][64];          // id bloków
@@ -684,6 +689,7 @@ public:
     int width;
     int moves = 0;
     int64_t user;
+    string nick;
     int durability = 999999;
     lista challanges;
     dpp::message msg;
@@ -691,9 +697,11 @@ public:
         valid = false;
         end = true;
     }
-    instancja(int64_t userd,int skind = 0,int typed=1,int durabilityd=99999,lista challangesd=lista())//0-own (9x9) 1-normal 
+    instancja(int64_t userd,string nicke,int skind = 0,int typed=1,int durabilityd=99999,lista challangesd=lista())//0-own (9x9) 1-normal 
     { // konstruktor
+        id  = rand();
         valid = true;
+        nick = nicke;
         user = userd;
         challanges = challangesd;
         durability = durabilityd;
@@ -1032,13 +1040,21 @@ void addToRank(rankk usr){// 2000
     }   
 }
 string logRank(){
-    string out;
+    string out = "Ranking :\n";
     for(int i = 0;i<25;i++){
         out.append(to_string(i+1));
         out.append(ranking[i].st());
         out.append("\n");
     }
     return out;
+}
+void reloadRank(){
+    ranking = map<int,rankk>();
+    map<int64_t, user>::iterator it;
+   for (it = usersData.begin(); it != usersData.end(); it++)
+    {
+        addToRank(rankk(it->second.score,it->second.nick));   
+    } 
 }
 void loadUSERS()
 {
@@ -1050,8 +1066,8 @@ void loadUSERS()
         cout << u.id << endl;
         print(u.getString());
         usersData[u.id] = u;
-        addToRank(rankk(u.score,u.nick));
     }
+    reloadRank();
     test2.close();
     logRank();
 }
@@ -1068,8 +1084,17 @@ void saveUSERS()
     test.close();
 }
 // ranking
-void gend(int64_t usr,int score){
-
+void gend(int64_t usr,string nick,int score,lista data = lista("[]"),instancja gla = instancja()){
+    if(usersData[usr].valid){//user istnieje
+        if(usersData[usr].score<score){
+            usersData[usr].score=score;
+            reloadRank();
+        }
+    } else{//nie istnieje
+        usersData[usr] = user(usr,nick,score,"0000-00-00 00.00.00",0,"{}");
+        reloadRank();
+    }
+    saveUSERS();
 }
 
 
@@ -1082,6 +1107,7 @@ string stop = "stop";
 lista uiEmoji = lista("[r_,l_,d_,stop]");
 int main()
 {
+    
     loadUSERS();
     srand(time(0));
     print(logRank());
@@ -1109,7 +1135,9 @@ int main()
                 event.reply(dpp::ir_update_message,game->msg.set_content(game->DcOutp()));
 
             }else{
-                
+                string nick = game->nick;
+                int score = game->score;
+                gend(u,nick,score,lista(),*game);
                 event.reply(dpp::ir_update_message,game->msg.set_content(game->DcOutEnd()));
                 sescje.erase(event.command.member.user_id);
             }
@@ -1117,9 +1145,9 @@ int main()
 
     });
     bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
-         if (event.command.get_command_name() == "test") {
+         if (event.command.get_command_name() == "test"||event.command.get_command_name() == "start") {
             const int64_t sender = int64_t(event.command.usr.id);
-            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,0,1,9999,lista())));
+            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,event.command.usr.username,0,1,9999,lista())));
             dpp::message mess = dpp::message(event.command.channel_id,sescje[sender].DcOutp());
             dpp::component btns = dpp::component();
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
@@ -1131,20 +1159,61 @@ int main()
             mess = bot.message_create_sync(mess);
             sescje[sender].setMSG(mess);
             thread end([&bot,&sender](){
+                int idea  = sescje[sender].id;
                 this_thread::sleep_for(chrono::minutes(5));
-                bot.message_edit(sescje[sender].msg.set_content(sescje[sender].DcOutEnd()));
-                sescje.erase(sender);
+                if(sescje[sender].valid,sescje[sender].id==idea){
+                    instancja *game = &(sescje[sender]);
+                    gend(game->user,game->nick,game->score,lista(),*game);
+                    bot.message_edit(sescje[sender].msg.set_content(sescje[sender].DcOutEnd()));
+                    sescje.erase(sender);
+                }
+                
             });
             end.detach();
             
             
         }
+        if (event.command.get_command_name() == "ranking"){
+            event.reply(logRank());
+        }
+        if (event.command.get_command_name() == "best"){
+            if(usersData[event.command.usr.id].valid){
+                string out = "Twój najlepszy wynik to : ";
+                out.append(to_string(usersData[event.command.usr.id].score));
+                event.reply(out);
+            }else{
+                event.reply("brak najlepszego wyniku w bazie danych");
+            }
+        }
+        if(event.command.get_command_name() == "autor"){
+            event.reply("Twórcą bot'a jest luktvpl#3144.");
+        }
+        if(event.command.get_command_name() == "help"){
+            event.reply("Dostępne komędy : \n/start - zaczyna gre\n/ranking - pokazuje ranking\n/best - pokazuje najlepszy wynik\n/autor - pokazuje autora bot'a \n/help - pokazuje dostępne komędy");
+        }
+
+
     });
  
     bot.on_ready([&bot](const dpp::ready_t& event) {
         if (dpp::run_once<struct register_bot_commands>()) {
             bot.global_command_create(
                 dpp::slashcommand("test", "nie tykać", bot.me.id)
+            );
+            bot.global_command_create(
+                dpp::slashcommand("start", "zaczyna gre", bot.me.id)
+            );
+            bot.global_command_create(
+                dpp::slashcommand("ranking", "podaje ranking", bot.me.id)
+            );
+            bot.global_command_create(
+                dpp::slashcommand("best", "podaje najlepszy wynik", bot.me.id)
+            );
+            bot.global_command_create(
+                dpp::slashcommand("autor", "podaje najlepszy wynik", bot.me.id)
+            );
+            bot.global_command_create(
+                dpp::slashcommand("help", "podaje najlepszy wynik", bot.me.id)
             );
         }
     });
