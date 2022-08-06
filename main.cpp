@@ -1039,6 +1039,17 @@ void addToRank(rankk usr){// 2000
         
     }   
 }
+class cmd{
+    public:
+    string cont;
+    cmd(string text){
+        cont  = text;
+    }
+    string get(int p){
+
+        return "cuś";
+    }
+};
 string logRank(){
     string out = "Ranking :\n";
     for(int i = 0;i<25;i++){
@@ -1145,7 +1156,7 @@ int main()
 
     });
     bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
-         if (event.command.get_command_name() == "test"||event.command.get_command_name() == "start") {
+        if (event.command.get_command_name() == "test"||event.command.get_command_name() == "start") {
             const int64_t sender = int64_t(event.command.usr.id);
             sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,event.command.usr.username,0,1,9999,lista())));
             dpp::message mess = dpp::message(event.command.channel_id,sescje[sender].DcOutp());
@@ -1169,9 +1180,7 @@ int main()
                 }
                 
             });
-            end.detach();
-            
-            
+            end.detach(); 
         }
         if (event.command.get_command_name() == "ranking"){
             event.reply(logRank());
@@ -1194,7 +1203,53 @@ int main()
 
 
     });
- 
+    bot.on_message_create([&bot](const dpp::message_create_t& event){
+        string cont = event.msg.content;
+        if (cont == ".test"||cont == ".start") {
+            const int64_t sender = int64_t(event.msg.author.id);
+            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,event.msg.author.username,0,1,9999,lista())));
+            dpp::message mess = dpp::message(event.msg.channel_id,sescje[sender].DcOutp());
+            dpp::component btns = dpp::component();
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🔽").set_style(dpp::cos_primary).set_id(d));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("▶️").set_style(dpp::cos_primary).set_id(r));
+            btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🛑").set_style(dpp::cos_danger).set_id(stop));
+            mess.add_component(btns);
+            mess.set_channel_id(event.msg.channel_id);
+            mess = bot.message_create_sync(mess);
+            sescje[sender].setMSG(mess);
+            thread end([&bot,&sender](){
+                int idea  = sescje[sender].id;
+                this_thread::sleep_for(chrono::minutes(5));
+                if(sescje[sender].valid,sescje[sender].id==idea){
+                    instancja *game = &(sescje[sender]);
+                    gend(game->user,game->nick,game->score,lista(),*game);
+                    bot.message_edit(sescje[sender].msg.set_content(sescje[sender].DcOutEnd()));
+                    sescje.erase(sender);
+                }
+                
+            });
+            end.detach(); 
+        }
+        if (cont == ".ranking"){
+            event.reply(logRank());
+        }
+        if (cont == ".best"){
+            if(usersData[event.msg.author.id].valid){
+                string out = "Twój najlepszy wynik to : ";
+                out.append(to_string(usersData[event.msg.author.id].score));
+                event.reply(out);
+            }else{
+                event.reply("brak najlepszego wyniku w bazie danych");
+            }
+        }
+        if(cont == ".autor"){
+            event.reply("Twórcą bot'a jest luktvpl#3144.");
+        }
+        if(cont == ".help"){
+            event.reply("Dostępne komędy : \n/.tart - zaczyna gre\n.ranking - pokazuje ranking\n.best - pokazuje najlepszy wynik\n.autor - pokazuje autora bot'a \n.help - pokazuje dostępne komędy");
+        }
+    });
     bot.on_ready([&bot](const dpp::ready_t& event) {
         if (dpp::run_once<struct register_bot_commands>()) {
             bot.global_command_create(
