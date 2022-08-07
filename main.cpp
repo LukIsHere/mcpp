@@ -577,6 +577,7 @@ public:
     string nick;
     int durability = 999999;
     lista challanges;
+    bool debug = false;
     dpp::message msg;
     instancja(){
         valid = false;
@@ -831,12 +832,12 @@ public:
     {
         if (!GetBlock(x + xm, y + ym).prop.include("unbreakable"))
         {
-            moves++;
             x += xm;
             y += ym;
             score = score + GetBlock(x, y).points;
             if (!GetBlock(x, y).prop.include("f2w"))
             {
+                durability--;
                 SetBlock(x, y, bn["air"]);
             }
             if (GetBlock(x, y - 1).prop.include("f2w"))
@@ -850,6 +851,15 @@ public:
     string DcOut(int xl, int yl)
     {
         string out = "punkty : " + to_string(score) + "\n";
+        if(debug){
+            out.append("x:");
+            out.append(to_string(x));
+            out.append(";y:");
+            out.append(to_string(y));
+            out.append("\nd:");
+            out.append(to_string(durability));
+            out.append("\n");
+        }
         for (int iy = 0; iy < 9; ++iy)
         {
             for (int ix = 0; ix < 9; ++ix)
@@ -1020,7 +1030,7 @@ int main()
             event.reply("Twórcą bot'a jest luktvpl#3144.");
         }
         if(event.command.get_command_name() == "help"){
-            event.reply("Dostępne komędy : \n/start - zaczyna gre\n/ranking - pokazuje ranking\n/best - pokazuje najlepszy wynik\n/autor - pokazuje autora bot'a \n/help - pokazuje dostępne komędy");
+            event.reply("Dostępne komędy : \n/start - zaczyna gre\n/ranking - pokazuje ranking\n/best - pokazuje najlepszy wynik\n/autor - pokazuje autora bot'a \n/help - pokazuje dostępne komędy\n/f3 - włącza tryb debugowania");
         }
 
 
@@ -1063,7 +1073,12 @@ int main()
             event.reply("Twórcą bot'a jest luktvpl#3144.");
         }
         if(cont == ".help"){
-            event.reply("Dostępne komędy : \n.start - zaczyna gre\n.ranking - pokazuje ranking\n.best - pokazuje najlepszy wynik\n.autor - pokazuje autora bot'a \n.help - pokazuje dostępne komędy");
+            event.reply("Dostępne komędy : \n.start - zaczyna gre\n.ranking - pokazuje ranking\n.best - pokazuje najlepszy wynik\n.autor - pokazuje autora bot'a \n.help - pokazuje dostępne komędy\n.f3 - włącza tryb debugowania(gra musi być włączona)");
+        }
+        if(cont == ".f3"){
+            int64_t s = event.msg.author.id;
+            if(sescje[s].valid)sescje[s].debug = !sescje[s].debug;
+            bot.message_edit(sescje[s].msg.set_content(sescje[s].DcOutp()));
         }
     });
     bot.on_ready([&bot](const dpp::ready_t& event) {
