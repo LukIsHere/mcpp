@@ -424,121 +424,6 @@ private:
         return out;
     }
 };
-// urzytkownicy
-class user
-{
-    // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:{metaData} (9) 691032155643445359:luk#3333:4000:2002-12-02 03.23.00:145:{}
-public:
-    int64_t id;
-    string nick;
-    int score;
-    string date;
-    int money;
-    int valid = 0;
-    bool empty = false;
-    metaData meta = metaData("{}");
-    user()
-    {
-        empty = true;
-        usercr("0: :0: :0:{}");
-    }
-    user(int64_t idd, string nickd, int scored, string dated)
-    {
-        try
-        {
-            id = idd;
-            nick = nickd;
-            score = scored;
-            date = dated;
-            money = 0;
-            valid = 1;
-        }
-        catch (const std::exception &e)
-        {
-            valid = 0;
-        }
-    }
-    user(int64_t idd, string nickd, int scored, string dated, int moneyd, string metad)
-    {
-        try
-        {
-            id = idd;
-            nick = nickd;
-            score = scored;
-            date = dated;
-            money = moneyd;
-            meta = metaData(metad);
-            valid = 1;
-        }
-        catch (const std::exception &e)
-        {
-            valid = 0;
-        }
-    }
-    user(string data)
-    {
-        usercr(data);
-    }
-    void usercr(string data)
-    {
-        try
-        {
-            string datta[6];
-            int indexdata = 0;
-            bool rmeta = false;
-            cout << data.length() << endl;
-            for (int i = 0; data.length() > i; ++i)
-            {
-                string charr;
-                charr.push_back(data.at(i));
-                if (charr != ":" || indexdata == 5)
-                {
-                    datta[indexdata].append(charr);
-                }
-                else
-                {
-                    ++indexdata;
-                }
-            }
-            id = getid(datta[0]);
-            nick = datta[1];
-            score = stoi(datta[2]);
-            date = datta[3];
-            money = stoi(datta[4]);
-            meta = metaData(datta[5]);
-            valid = 1;
-        }
-        catch (...)
-        {
-            valid = 0;
-            cout << "błąd użytkownika : " << data << endl;
-        }
-    }
-    void logout()
-    {
-        cout << getString() << endl;
-    }
-    string getString()
-    {
-        // idDC:nickDC:bestS:rrrr-mm-dd hh.mm.ss:money:{meta}
-        string out;
-        out.append(to_string(id));
-        out.append(":");
-        out.append(nick);
-        out.append(":");
-        out.append(to_string(score));
-        out.append(":");
-        out.append(date);
-        out.append(":");
-        out.append(to_string(money));
-        out.append(":");
-        out.append(meta.getall());
-
-        return out;
-    }
-};
-// ranki
-int64_t rankint[25]; // 0-24
 // skiny (postacie)
 class skine
 {
@@ -1001,8 +886,6 @@ public:
     // player container - map (in future)
 };
 map<int64_t, instancja> sescje;
-// dane użytkowników load/save
-map<int64_t, user> usersData;
 //ranking
 class rankk{
     public:
@@ -1050,62 +933,9 @@ class cmd{
         return "cuś";
     }
 };
-string logRank(){
-    string out = "Ranking :\n";
-    for(int i = 0;i<25;i++){
-        out.append(to_string(i+1));
-        out.append(ranking[i].st());
-        out.append("\n");
-    }
-    return out;
-}
-void reloadRank(){
-    ranking = map<int,rankk>();
-    map<int64_t, user>::iterator it;
-   for (it = usersData.begin(); it != usersData.end(); it++)
-    {
-        addToRank(rankk(it->second.score,it->second.nick));   
-    } 
-}
-void loadUSERS()
-{
-    string tt;
-    ifstream test2("data.txt");
-    while (getline(test2, tt))
-    {
-        user u = user(tt);
-        cout << u.id << endl;
-        print(u.getString());
-        usersData[u.id] = u;
-    }
-    reloadRank();
-    test2.close();
-    logRank();
-}
-void saveUSERS()
-{
-    ofstream test("data.txt");
-    map<int64_t, user>::iterator it;
-    for (it = usersData.begin(); it != usersData.end(); it++)
-    {
-        cout << it->second.getString() << endl;
-        test << it->second.getString() << endl;
-        
-    }
-    test.close();
-}
 // ranking
 void gend(int64_t usr,string nick,int score,lista data = lista("[]"),instancja gla = instancja()){
-    if(usersData[usr].valid){//user istnieje
-        if(usersData[usr].score<score){
-            usersData[usr].score=score;
-            reloadRank();
-        }
-    } else{//nie istnieje
-        usersData[usr] = user(usr,nick,score,"0000-00-00 00.00.00",0,"{}");
-        reloadRank();
-    }
-    saveUSERS();
+    //koniec gry dane
 }
 
 
@@ -1119,9 +949,7 @@ lista uiEmoji = lista("[r_,l_,d_,stop]");
 int main()
 {
     
-    loadUSERS();
     srand(time(0));
-    print(logRank());
     string tt;
     ifstream test2("token.txt");
     string token;
@@ -1158,7 +986,7 @@ int main()
     bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
         if (event.command.get_command_name() == "test"||event.command.get_command_name() == "start") {
             const int64_t sender = int64_t(event.command.usr.id);
-            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,event.command.usr.username,0,1,9999,lista())));
+            sescje[sender] = instancja(sender,event.command.usr.username,0,1,9999,lista());
             dpp::message mess = dpp::message(event.command.channel_id,sescje[sender].DcOutp());
             dpp::component btns = dpp::component();
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
@@ -1183,16 +1011,10 @@ int main()
             end.detach(); 
         }
         if (event.command.get_command_name() == "ranking"){
-            event.reply(logRank());
+            event.reply("aktualnie ranking wyłączony zewzględu na błąd w kodzie");
         }
         if (event.command.get_command_name() == "best"){
-            if(usersData[event.command.usr.id].valid){
-                string out = "Twój najlepszy wynik to : ";
-                out.append(to_string(usersData[event.command.usr.id].score));
-                event.reply(out);
-            }else{
-                event.reply("brak najlepszego wyniku w bazie danych");
-            }
+            event.reply("aktualnie ranking wyłączony zewzględu na błąd w kodzie");
         }
         if(event.command.get_command_name() == "autor"){
             event.reply("Twórcą bot'a jest luktvpl#3144.");
@@ -1207,7 +1029,7 @@ int main()
         string cont = event.msg.content;
         if (cont == ".test"||cont == ".start") {
             const int64_t sender = int64_t(event.msg.author.id);
-            sescje.insert(pair<int64_t,instancja>(sender,instancja(sender,event.msg.author.username,0,1,9999,lista())));
+            sescje[sender]=instancja(sender,event.msg.author.username,0,1,9999,lista());
             dpp::message mess = dpp::message(event.msg.channel_id,sescje[sender].DcOutp());
             dpp::component btns = dpp::component();
             btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id(l));
@@ -1232,22 +1054,16 @@ int main()
             end.detach(); 
         }
         if (cont == ".ranking"){
-            event.reply(logRank());
+            event.reply("aktualnie ranking wyłączony zewzględu na błąd w kodzie");
         }
         if (cont == ".best"){
-            if(usersData[event.msg.author.id].valid){
-                string out = "Twój najlepszy wynik to : ";
-                out.append(to_string(usersData[event.msg.author.id].score));
-                event.reply(out);
-            }else{
-                event.reply("brak najlepszego wyniku w bazie danych");
-            }
+            event.reply("aktualnie ranking wyłączony zewzględu na błąd w kodzie");
         }
         if(cont == ".autor"){
             event.reply("Twórcą bot'a jest luktvpl#3144.");
         }
         if(cont == ".help"){
-            event.reply("Dostępne komędy : \n/.tart - zaczyna gre\n.ranking - pokazuje ranking\n.best - pokazuje najlepszy wynik\n.autor - pokazuje autora bot'a \n.help - pokazuje dostępne komędy");
+            event.reply("Dostępne komędy : \n.start - zaczyna gre\n.ranking - pokazuje ranking\n.best - pokazuje najlepszy wynik\n.autor - pokazuje autora bot'a \n.help - pokazuje dostępne komędy");
         }
     });
     bot.on_ready([&bot](const dpp::ready_t& event) {
@@ -1272,7 +1088,6 @@ int main()
             );
         }
     });
-    saveUSERS();
     bot.start(false);
     
 }
