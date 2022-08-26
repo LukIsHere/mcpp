@@ -13,7 +13,7 @@ drawCircle(x,y,r,block){ //drawing circle
     }
     this.setblock(ax,ay,block)
   }
-drawCircleScal(x,y,r,w,h,block){ //scaling circle
+drawCircleScal(x,y,r,w,h,block){ //drawing and scaling circle
     var ax = x;
     var ay = y;
     var ar = r;
@@ -37,11 +37,25 @@ drawCircleScal(x,y,r,w,h,block){ //scaling circle
     this.setblock(ax,ay,block)
   }
 
-  mirrorP(x,xm,y,ym,block){ mirroring
+  mirrorP(x,xm,y,ym,block){ //mirroring
     this.setblock(x+xm,y+ym,block)
     this.setblock(x+xm,y-ym,block)
     this.setblock(x-xm,y+ym,block)
     this.setblock(x-xm,y-ym,block)
+  }
+drawLine(x,y,dx,dy,block){//draw line
+    if(dx<dy){
+      for(var i = 0;i<dy;i++){
+        var p = i/dy
+        this.setblock(x+Math.round(p*dx),y+i,block);
+      }
+    }else{
+      for(var i = 0;i<dx;i++){
+        var p = i/dx
+        this.setblock(x+i,y+Math.round(p*dy),block);
+      }
+    }
+    
   }
 //js concepts
 //soon will be re write in C++
