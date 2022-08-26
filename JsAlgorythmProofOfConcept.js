@@ -1,4 +1,4 @@
-drawCircle(x,y,r,block){
+drawCircle(x,y,r,block){ //drawing circle
     var ax = x;
     var ay = y;
     var ar = r;
@@ -37,11 +37,11 @@ drawCircleScal(x,y,r,w,h,block){ //scaling circle
     this.setblock(ax,ay,block)
   }
 
-  mirrorP(x,xm,y,ym,block){
+  mirrorP(x,xm,y,ym,block){ mirroring
     this.setblock(x+xm,y+ym,block)
     this.setblock(x+xm,y-ym,block)
     this.setblock(x-xm,y+ym,block)
     this.setblock(x-xm,y-ym,block)
   }
-//js concept off drawing circle tehniq
+//js concepts
 //soon will be re write in C++
