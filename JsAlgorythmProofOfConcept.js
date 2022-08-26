@@ -57,5 +57,19 @@ drawLine(x,y,dx,dy,block){//draw line
     }
     
   }
+drawLineThick(x,y,dx,dy,r,block){//bigger lines
+    if(dx<dy){
+      for(var i = 0;i<dy;i++){
+        var p = i/dy
+        this.drawCircle(x+Math.round(p*dx),y+i,r,block);
+      }
+    }else{
+      for(var i = 0;i<dx;i++){
+        var p = i/dx
+        this.drawCircle(x+i,y+Math.round(p*dy),r,block);
+      }
+    }
+    
+  }
 //js concepts
 //soon will be re write in C++
