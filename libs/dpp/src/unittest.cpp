@@ -19,6 +19,8 @@
  *
  ************************************************************************************/
 #include "test.h"
+#include <dpp/dpp.h>
+#include <dpp/nlohmann/json.hpp>
 
 /* Current list of unit tests */
 std::map<std::string, test_t> tests = {
@@ -51,9 +53,7 @@ std::map<std::string, test_t> tests = {
 	{"GETPINS", {tt_online, "cluster::channel_pins_get()", false, false}},
 	{"GETEVENTS", {tt_online, "cluster::guild_events_get()", false, false}},
 	{"GETEVENT", {tt_online, "cluster::guild_event_get()", false, false}},
-	{"MSGMENTIONUSER", {tt_online, "message_create_t::reply() (mention)", false, false}},
 	{"MSGCREATESEND", {tt_online, "message_create_t::send()", false, false}},
-	{"MSGCREATEREPLY", {tt_online, "message_create_t::reply()", false, false}},
 	{"GETEVENTUSERS", {tt_online, "cluster::guild_event_users_get()", false, false}},
 	{"TIMERSTART", {tt_online, "start timer", false, false}},
 	{"TIMERSTOP", {tt_online, "stop timer", false, false}},
@@ -63,22 +63,35 @@ std::map<std::string, test_t> tests = {
 	{"MSGCOLLECT", {tt_online, "message_collector", false, false}},
 	{"TS", {tt_online, "managed::get_creation_date()", false, false}},
 	{"READFILE", {tt_offline, "utility::read_file()", false, false}},
-	{"TIMESTAMPTOSTRING", {tt_offline, "dpp::ts_to_string()", false, false}},
-	{"TIMESTRINGTOTIMESTAMP", {tt_offline, "dpp::ts_not_null()", false, false}},
-	{"COMMANDOPTIONCHOICEFILLFROMJSON", {tt_offline, "dpp::command_option_choice::fill_from_json()", false, false}},
-	{"HOSTINFO", {tt_offline, "dpp::https_client::get_host_info()", false, false}},
-	{"HTTPS", {tt_online, "dpp::https_client HTTPS request", false, false}},
-	{"HTTP", {tt_offline, "dpp::https_client HTTP request", false, false}},
-	{"RUNONCE", {tt_offline, "dpp::run_once<T>", false, false}},
-	{"WEBHOOK", {tt_offline, "dpp::webhook construct from URL", false, false}},
+	{"TIMESTAMPTOSTRING", {tt_offline, "ts_to_string()", false, false}},
+	{"TIMESTRINGTOTIMESTAMP", {tt_offline, "ts_not_null()", false, false}},
+	{"OPTCHOICE_DOUBLE", {tt_offline, "command_option_choice::fill_from_json: double", false, false}},
+	{"OPTCHOICE_INT", {tt_offline, "command_option_choice::fill_from_json: int64_t", false, false}},
+	{"OPTCHOICE_BOOL", {tt_offline, "command_option_choice::fill_from_json: bool", false, false}},
+	{"OPTCHOICE_SNOWFLAKE", {tt_offline, "command_option_choice::fill_from_json: snowflake", false, false}},
+	{"OPTCHOICE_STRING", {tt_offline, "command_option_choice::fill_from_json: string", false, false}},
+	{"HOSTINFO", {tt_offline, "https_client::get_host_info()", false, false}},
+	{"HTTPS", {tt_online, "https_client HTTPS request", false, false}},
+	{"HTTP", {tt_offline, "https_client HTTP request", false, false}},
+	{"RUNONCE", {tt_offline, "run_once<T>", false, false}},
+	{"WEBHOOK", {tt_offline, "webhook construct from URL", false, false}},
 	{"MD_ESC_1", {tt_offline, "Markdown escaping (ignore code block contents)", false, false}},
 	{"MD_ESC_2", {tt_offline, "Markdown escaping (escape code block contents)", false, false}},
 	{"URLENC", {tt_offline, "URL encoding", false, false}},
-	{"SYNC", {tt_online, "dpp::sync<T>()", false, false}},
-	{"COMPARISON", {tt_offline, "dpp::manged object comparison", false, false}},
-	{"CHANNELCACHE", {tt_online, "dpp::find_channel()", false, false}},
-	{"CHANNELTYPES", {tt_online, "dpp::channel type flags", false, false}},
-	{"PERMISSION_CLASS", {tt_offline, "testing dpp::permission functionality", false, false}},
+	{"SYNC", {tt_online, "sync<T>()", false, false}},
+	{"COMPARISON", {tt_offline, "manged object comparison", false, false}},
+	{"CHANNELCACHE", {tt_online, "find_channel()", false, false}},
+	{"CHANNELTYPES", {tt_online, "channel type flags", false, false}},
+	{"PERMISSION_CLASS", {tt_offline, "permission", false, false}},
+	{"USER.GET_MENTION", {tt_offline, "user::get_mention", false, false}},
+	{"USER.FORMAT_USERNAME", {tt_offline, "user::format_username", false, false}},
+	{"USER.GET_CREATION_TIME", {tt_offline, "user::get_creation_time", false, false}},
+	{"UTILITY.ICONHASH", {tt_offline, "utility::iconhash", false, false}},
+	{"UTILITY.MAKE_URL_PARAMETERS", {tt_offline, "utility::make_url_parameters", false, false}},
+	{"UTILITY.MARKDOWN_ESCAPE", {tt_offline, "utility::markdown_escape", false, false}},
+	{"UTILITY.TOKENIZE", {tt_offline, "utility::tokenize", false, false}},
+	{"UTILITY.URL_ENCODE", {tt_offline, "utility::url_encode", false, false}},
+	{"ROLE.COMPARE", {tt_offline, "role::operator<", false, false}},
 };
 
 double start = dpp::utility::time_f();
@@ -144,7 +157,7 @@ int test_summary() {
 
 std::vector<uint8_t> load_test_audio() {
 	std::vector<uint8_t> testaudio;
-	std::ifstream input ("../testdata/Robot.pcm", std::ios::in|std::ios::binary|std::ios::ate);
+	std::ifstream input ("../../testdata/Robot.pcm", std::ios::in|std::ios::binary|std::ios::ate);
 	if (input.is_open()) {
 		size_t testaudio_size = input.tellg();
 		testaudio.resize(testaudio_size);
@@ -153,7 +166,7 @@ std::vector<uint8_t> load_test_audio() {
 		input.close();
 	}
 	else {
-		std::cout << "ERROR: Can't load ../testdata/Robot.pcm\n";
+		std::cout << "ERROR: Can't load ../../testdata/Robot.pcm\n";
 		exit(1);
 	}
 	return testaudio;

@@ -98,6 +98,24 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "fstream": "cpp"
+    "fstream": "cpp",
+    "queue": "cpp",
+    "functional": "cpp",
+    "list": "cpp",
+    "unordered_map": "cpp",
+    "xhash": "cpp",
+    "codecvt": "cpp",
+    "condition_variable": "cpp",
+    "coroutine": "cpp",
+    "csignal": "cpp",
+    "deque": "cpp",
+    "resumable": "cpp",
+    "filesystem": "cpp",
+    "future": "cpp",
+    "mutex": "cpp",
+    "numeric": "cpp",
+    "shared_mutex": "cpp",
+    "valarray": "cpp",
+    "variant": "cpp"
   }
 }

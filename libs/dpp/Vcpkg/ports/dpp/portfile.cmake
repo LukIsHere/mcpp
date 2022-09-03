@@ -1,9 +1,11 @@
 vcpkg_from_github(
-	OUT_SOURCE_PATH SOURCE_PATH
-	REPO brainboxdotcc/DPP
-	REF 037647445048c9e4bf60621ca07761242452d417
-	SHA512 4b1725b094fc721ce295dae7ba661275d2e31769493c5f5ce242c6727be4bdffad993ca48916d11960e44f6402196cb08151e713d5a7618a6436093bc170812a
-	HEAD_REF master
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO brainboxdotcc/DPP
+    REF 6e0e324dad8bf00b497d9340c0aa675b3e62f530
+    SHA512  835f99e4bd092c7b60b299bf5de65ed6d10cc23743bdfa8c0ac93a66a224c7af1a0c30aedbac6b128d3db38bc5bfb8e12b314392ab3bf9ccc84a85c2a3fc12c1
+    HEAD_REF master
+    PATCHES
+        make-pkgconfig-required.patch
 )
 
 vcpkg_cmake_configure(
@@ -12,13 +14,20 @@ vcpkg_cmake_configure(
 
 vcpkg_cmake_install()
 
-if (UNIX)
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/bin" "${CURRENT_PACKAGES_DIR}/bin")
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share/dpp")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
 
 file(
-	INSTALL "${SOURCE_PATH}/LICENSE"
-	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
-	RENAME copyright
+    INSTALL "${SOURCE_PATH}/LICENSE"
+    DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+    RENAME copyright
 )
+
+file(COPY "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+

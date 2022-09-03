@@ -34,13 +34,13 @@ int main()
          /* check if the context menu name is High Five */
          if (event.command.get_command_name() == "High Five") {
              dpp::user user = event.get_user(); // the user who the command has been issued on
-             dpp::user author = event.command.usr; // the user who clicked on the context menu
+             dpp::user author = event.command.get_issuing_user(); // the user who clicked on the context menu
              event.reply(author.get_mention() + " slapped " + user.get_mention());
          }
     });
 
     /* Start bot */
-    bot.start(false);
+    bot.start(dpp::st_wait);
 
     return 0;
 }

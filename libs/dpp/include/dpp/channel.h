@@ -43,13 +43,13 @@ enum channel_type : uint8_t {
 	 */
 	GROUP_DM		= 3,
 	CHANNEL_CATEGORY	= 4,	//!< an organizational category that contains up to 50 channels
-	CHANNEL_NEWS		= 5,	//!< a channel that users can follow and crosspost into their own server
+	CHANNEL_ANNOUNCEMENT	= 5,	//!< a channel that users can follow and crosspost into their own server
 	/**
 	 * @brief a channel in which game developers can sell their game on Discord
 	 * @deprecated store channels are deprecated by Discord
 	 */
 	CHANNEL_STORE		= 6,
-	CHANNEL_NEWS_THREAD	= 10,	//!< a temporary sub-channel within a GUILD_NEWS channel
+	CHANNEL_ANNOUNCEMENT_THREAD	= 10,	//!< a temporary sub-channel within a GUILD_ANNOUNCEMENT channel
 	CHANNEL_PUBLIC_THREAD	= 11,	//!< a temporary sub-channel within a GUILD_TEXT channel
 	CHANNEL_PRIVATE_THREAD	= 12,	//!< a temporary sub-channel within a GUILD_TEXT channel that is only viewable by those invited and those with the MANAGE_THREADS permission
 	CHANNEL_STAGE		= 13,	//!< a "stage" channel, like a voice channel with one authorised speaker
@@ -126,13 +126,13 @@ struct DPP_EXPORT permission_overwrite {
 struct DPP_EXPORT thread_metadata {
 	/// When the thread was archived
 	time_t archive_timestamp;
-	/// The duration after a thread will archive
+	/// The duration in minutes to automatically archive the thread after recent activity.
 	uint16_t auto_archive_duration;
 	/// Whether a thread is archived
 	bool archived;
-	/// Whether a thread is locked
+	/// Whether a thread is locked. When a thread is locked, only users with `MANAGE_THREADS` can unarchive it
 	bool locked;
-	/// Whether non-moderators can add other non-moderators 
+	/// Whether non-moderators can add other non-moderators. Only for private threads
 	bool invitable;
 };
 
@@ -143,11 +143,11 @@ struct DPP_EXPORT thread_member
 {
 	/// ID of the thread member is part of
 	snowflake thread_id;
-	/// ID of the member 
+	/// ID of the member
 	snowflake user_id;
-	/// When the user joined the thread
+	/// The time when user last joined the thread
 	time_t joined;
-	/// Flags bitmap
+	/// Any user-thread settings, currently only used for notifications
 	uint32_t flags;
 
 	/**
@@ -277,15 +277,15 @@ public:
 	/**
 	 * @brief Set flags for this channel object
 	 *
-	 * @param flags Flag bitmask to set
+	 * @param flags Flag bitmask to set from dpp::channel_flags
 	 * @return Reference to self, so these method calls may be chained 
 	 */
-	channel& set_flags(const uint16_t flags);
+	channel& set_flags(const uint8_t flags);
 
 	/**
 	 * @brief Add (bitwise OR) a flag to this channel object
 	 * 	
-	 * @param flag Flag bit to set
+	 * @param flag Flag bit to add from dpp::channel_flags
 	 * @return Reference to self, so these method calls may be chained 
 	 */
 	channel& add_flag(const channel_flags flag);
@@ -293,7 +293,7 @@ public:
 	/**
 	 * @brief Remove (bitwise NOT AND) a flag from this channel object
 	 * 	
-	 * @param flag Flag bit to set
+	 * @param flag Flag bit to remove from dpp::channel_flags
 	 * @return Reference to self, so these method calls may be chained 
 	 */
 	channel& remove_flag(const channel_flags flag);
@@ -496,9 +496,9 @@ public:
 	bool is_forum() const;
 
 	/**
-	 * @brief Returns true if the channel is a news channel
+	 * @brief Returns true if the channel is an announcement channel
 	 * 
-	 * @return true if news channel
+	 * @return true if announcement channel
 	 */
 	bool is_news_channel() const;
 
@@ -554,7 +554,7 @@ public:
 	/** Thread metadata (threads) */
 	thread_metadata metadata;
 
-	/** Approximate count of messages in a thread (threads) */
+	/** Number of messages (not including the initial message or deleted messages) of the thread. If the thread was created before July 1, 2022, it stops counting at 50 */
 	uint8_t message_count;
 
 	/** Approximate count of members in a thread (threads) */
@@ -566,9 +566,9 @@ public:
 	thread();
 
 	/**
-	 * @brief Returns true if the channel is a news thread
+	 * @brief Returns true if the thread is within an announcement channel
 	 *
-	 * @return true if news thread
+	 * @return true if announcement thread
 	 */
 	bool is_news_thread() const;
 

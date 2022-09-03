@@ -26,7 +26,6 @@
 #include <dpp/discordevents.h>
 #include <dpp/stringops.h>
 #include <dpp/nlohmann/json.hpp>
-#include <dpp/fmt-minimal.h>
 
 using json = nlohmann::json;
 
@@ -119,7 +118,7 @@ channel& channel::set_bitrate(const uint16_t bitrate) {
 	return *this;
 }
 
-channel& channel::set_flags(const uint16_t flags) {
+channel& channel::set_flags(const uint8_t flags) {
 	this->flags = flags;
 	return *this;
 }
@@ -192,7 +191,7 @@ bool channel::is_stage_channel() const {
 }
 
 bool channel::is_news_channel() const {
-	return (flags & CHANNEL_TYPE_MASK) == CHANNEL_NEWS;
+	return (flags & CHANNEL_TYPE_MASK) == CHANNEL_ANNOUNCEMENT;
 }
 
 bool channel::is_store_channel() const {
@@ -217,7 +216,7 @@ bool channel::is_pinned_thread() const {
 }
 
 bool thread::is_news_thread() const {
-	return (flags & CHANNEL_TYPE_MASK) == CHANNEL_NEWS_THREAD;
+	return (flags & CHANNEL_TYPE_MASK) == CHANNEL_ANNOUNCEMENT_THREAD;
 }
 
 bool thread::is_public_thread() const {
@@ -438,12 +437,7 @@ std::string channel::get_icon_url(uint16_t size) const {
 	 * At some point in the future this URL *will* change!
 	 */
 	if (!this->icon.to_string().empty()) {
-		return fmt::format("{}/channel-icons/{}/{}.png{}",
-						   utility::cdn_host,
-						   this->id,
-						   this->icon.to_string(),
-						   utility::avatar_size(size)
-		);
+		return utility::cdn_host + "/channel-icons/" + std::to_string(this->id) + "/" + this->icon.to_string() + ".png" + utility::avatar_size(size);
 	} else {
 		return std::string();
 	}

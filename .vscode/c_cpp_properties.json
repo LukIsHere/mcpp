@@ -4,7 +4,8 @@
             "name": "windows-clang-x64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/libs/dpp/include/*"
+                "${workspaceFolder}/libs/dpp/include/*",
+                "${workspaceFolder}/libs/lsudms/include/*"
             ],
             "defines": [
                 "_DEBUG",

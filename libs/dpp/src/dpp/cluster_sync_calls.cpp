@@ -32,6 +32,7 @@
 #include <dpp/cluster.h>
 
 namespace dpp {
+
 slashcommand_map cluster::global_bulk_command_create_sync(const std::vector<slashcommand> &commands) {
 	return dpp::sync<slashcommand_map>(this, &cluster::global_bulk_command_create, commands);
 }
@@ -232,8 +233,8 @@ confirmation cluster::guild_current_member_edit_sync(snowflake guild_id, const s
 	return dpp::sync<confirmation>(this, &cluster::guild_current_member_edit, guild_id, nickname);
 }
 
-auditlog cluster::guild_auditlog_get_sync(snowflake guild_id) {
-	return dpp::sync<auditlog>(this, &cluster::guild_auditlog_get, guild_id);
+auditlog cluster::guild_auditlog_get_sync(snowflake guild_id, snowflake user_id, uint32_t action_type, snowflake before, uint32_t limit) {
+	return dpp::sync<auditlog>(this, &cluster::guild_auditlog_get, guild_id, user_id, action_type, before, limit);
 }
 
 confirmation cluster::guild_ban_add_sync(snowflake guild_id, snowflake user_id, uint32_t delete_message_days) {

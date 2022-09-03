@@ -69,6 +69,7 @@
 #include <dpp/once.h>
 #include <dpp/sync.h>
 #include <dpp/colors.h>
+#include <dpp/discordevents.h>
 
 namespace dpp {
 
@@ -191,7 +192,7 @@ public:
 	 */
 	virtual const dpp::collected_reaction* filter(const dpp::message_reaction_add_t& element) {
 		/* Capture reactions for given message ID only */
-		if (message_id == 0 || element.message_id == message_id) {
+		if (message_id.empty() || element.message_id == message_id) {
 			react.id = element.message_id;
 			react.react_user = element.reacting_user;
 			react.react_guild = element.reacting_guild;
