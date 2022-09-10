@@ -499,6 +499,7 @@ int64_t ums::stoi64(string v){
                         ifstream of(loc);
                         *open = true;
                         string decode;
+                        std::cout << "[baza danych] wczytywanie bazy danych" << std::endl;
                         while (getline(of,decode))
                         {
                             string id;
@@ -516,13 +517,14 @@ int64_t ums::stoi64(string v){
                                 }
                             }//działa
                             int64_t idd = stoi64(id);
-                            cout << id << endl;
-                            cout << idd << endl;
                             m->insert(pair<int64_t,user>(idd,user(data)));
                         }
+                        std::cout << "[baza danych] wczytano bazę danych" << std::endl;
                         of.close();
                         *open = false;
+
                     },loc);
+
                     load.detach();
             };
             void ums::db::backup(string name){

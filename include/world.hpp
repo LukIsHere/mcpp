@@ -5,6 +5,7 @@
 #include "emoji.hpp"
 #include "dpp/dpp.h"
 #include <cmath>
+#include "translation.hpp"
 #define overworld 0;
 #define nether 1;
 #define custom 2;
@@ -12,6 +13,8 @@ namespace world{
     
     class world{
         public:
+            int lang = 0;
+            int afk = 0;
             int16_t *w = nullptr;
             int height;
             int width;
@@ -20,16 +23,16 @@ namespace world{
             int durability;
             int x,y;
             int WorldT;
-            bool debug=false;
-            bool valid;
+            std::atomic<bool> debug=false;
+            std::atomic<bool> valid;
             dpp::message msg;
             int64_t u;
             std::string name;
-            bool end;
+            std::atomic<bool> end;
             int id;
             std::string endtxt = "koniec";
             world();
-            world(int worldType,int skin=0,int dur=260);
+            world(int worldType,int skin=0,int dur=260,int language=1);
             world(std::string form);//string to world
             ~world();
             void connect(dpp::message ms,int64_t usr);
@@ -40,6 +43,7 @@ namespace world{
             blocks::block getBlock(int dx,int dy);
             int getBlockId(int dx,int dy);
             //debug
+            bool afktick();
             void log();
             //modifi world
             void setBlock(int dx,int dy,blocks::block block);

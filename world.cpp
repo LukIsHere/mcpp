@@ -63,8 +63,11 @@ ruda rudy[9] = {
             //bool end;
             world::world::world(){
                 valid = false;
+                w = nullptr;
             }
-            world::world::world(int worldType,int skin,int dur){
+            world::world::world(int worldType,int skin,int dur,int language){
+                lang = language;
+                afk = 0;
                 end = false;
                 valid = true;
                 score = 0;
@@ -309,7 +312,6 @@ ruda rudy[9] = {
                 //to-do  (later update)
             };//string to world
             world::world::~world(){
-                if(w==nullptr)return;
                 delete [] w;
             };
             void world::world::connect(dpp::message ms,int64_t usr){
@@ -322,10 +324,13 @@ ruda rudy[9] = {
                 return "";
             };//world to string
             std::string world::world::getDC(){
-                std::string out = "Punkty : ";
+                std::string out = punkty.tra[lang];
+                if(w==nullptr){
+                    return "świat uległ korupcji";
+                }
                 out.append(std::to_string(score));
                 out.append("\n");
-                if(debug){
+                if(debug&&!end){
                     out.append("x:");
                     out.append(std::to_string(x));
                     out.append("y:");
@@ -418,15 +423,21 @@ ruda rudy[9] = {
                     }
                 }
             };
+            bool world::world::afktick(){
+                if(afk>1)return true;
+                afk++;
+                return false;
+            }
             //interaction with world
             void world::world::move(int xm,int ym){
+                afk = 0;
                 if(end||!valid)return;
                 int tx = x+xm;
                 int ty = y+ym;
                 blocks::block t = getBlock(tx,ty);
                 if(t.props.unbreakable)return;
                 if(t.props.death){
-                    finish("umarl w "+t.name);
+                    finish(name+umarlw.tra[lang]+t.name);
                 }
                 if(t.props.free2walk){
 
@@ -434,12 +445,12 @@ ruda rudy[9] = {
                     score += t.point;
                     setBlock(tx,ty,b_air);
                     durability-=1;
-                    if(durability<0)finish("koniec użyć");
+                    if(durability<0)finish(durabilityKoniec.tra[lang]);
                 }
                 x=tx;
                 y=ty;
                 if(getBlock(x,y-1).props.death){
-                    finish("umarl w "+getBlock(x,y-1).name);
+                    finish(name+umarlw.tra[lang]+getBlock(x,y-1).name);
                     return;
                 }
                 if(getBlock(x,y-1).props.free2walk)move(0,-1);
