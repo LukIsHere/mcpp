@@ -1,11 +1,14 @@
 #include "include/world.hpp"
+#include "include/main.hpp"
 #include "dpp/dpp.h"
 #include "lsudms.hpp"
 #include <thread>
 #include <chrono>
 #include "include/console.hpp"
 
+
 std::map<int64_t,world::world*> gry;
+std::mutex gry_S;
 ums::db data("database","usr.txt");
 bool end = false;
 
@@ -23,20 +26,20 @@ void gameEnd(world::world *w){
         data.save();
     }
 }
-bool gameExist(int64_t u){
+bool gameExist(int64_t u/*czy olewać blokadę mapy*/){
     return (gry.find(u) != gry.end());
 }
-void delgame(int64_t u){
+void delgame(int64_t u/*czy olewać blokadę mapy*/){
     if(gameExist(u)){
-        
-        if(!gry[u]->valid)return
         gameEnd(gry[u]);
         delete gry[u];
         gry.erase(u);
     }
+    return;
 }
 int getLang(int64_t dcID){
-    if(data.data.find(dcID)==data.data.end()){
+    if(!data.data[dcID].data["lang"].exist) {
+        data.data[dcID].data["lang"] = l_pl;
         return l_pl;
     }else{
         int lang = data.data[dcID].data.find("lang")->second.gint();
@@ -66,22 +69,35 @@ int main(){
     test2.close();
     dpp::cluster bot = dpp::cluster(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_integrations);
     std::thread gmClean([&bot](){
-    while(!end){
+        while (!end) {
             std::this_thread::sleep_for(std::chrono::seconds::duration(15));
             console.log(" tick anty afka");
+            const std::lock_guard<std::mutex> lock(gry_S);
             int64_t u;
-            std::map<int64_t,world::world*>::iterator it;
-            for(it = gry.begin();it!=gry.end();it++){
+            std::vector<int64_t> toDelete;
+            std::vector<int64_t> invalid;
+            std::map<int64_t, world::world*>::iterator it;
+            for (it = gry.begin(); it != gry.end(); it++) {
                 u = it->first;
-                if(gry[u]->valid){
-                    if(gry[u]->afktick()){
-                        gry[u]->finish(gry[u]->name+bylafk.tra[gry[u]->lang]);
+                if (gry[u]->valid) {
+                    if (gry[u]->afktick()) {
+                        gry[u]->finish(gry[u]->name + bylafk.tra[gry[u]->lang]);
                         bot.message_edit(gry[u]->msg.set_content(gry[u]->getDC()));
-                        delgame(u);
+                        toDelete.push_back(u);
                     }
-                }else{
-                    gry.erase(u);
                 }
+                else {
+                    invalid.push_back(u);
+                    
+                }
+
+
+            }
+            for(int i=0; i < toDelete.size(); i++){
+                delgame(toDelete[i]);
+            }
+            for(int i=0; i < invalid.size(); i++){
+                gry.erase(invalid[i]);
             }
         }
         
@@ -99,14 +115,15 @@ int main(){
         if(!supporteds.include(std::to_string(int64_t(event.msg.guild_id))))return;
         
         if(ow.include(event.msg.content)){
+                const std::lock_guard<std::mutex> lock(gry_S);
                 console.log(event.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.msg.guild_id));
                 if(gameExist(u)){
                     gry[u]->finish(gry[u]->name + nowagra.tra[lang]);
                     bot.message_edit(gry[u]->msg.set_content(gry[u]->getDC()));
                     delgame(u);
-                };
-                gry[u] = new world::world(0,0,260,lang);
-                gry[u]->name = event.msg.author.username;
+                    
+                }
+                gry[u] = new world::world(0, 0, 260, lang);
                 dpp::message mess = dpp::message(event.msg.channel_id,gry[u]->getDC());
                 dpp::component btns = dpp::component();
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id("l"));
@@ -116,19 +133,18 @@ int main(){
                 mess.add_component(btns);
                 mess.set_channel_id(event.msg.channel_id);
                 mess = bot.message_create_sync(mess);
-                gry[u]->msg = mess;
-                gry[u]->u = u;
+                gry[u]->connect(mess, u, event.msg.author.username);
         }
         if(nt.include(event.msg.content)){
-                console.log(event.msg.author.username+" tworzy grę w netherze na serwerze "+std::to_string(+event.msg.guild_id));
+                const std::lock_guard<std::mutex> lock(gry_S);
+                console.log(event.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.msg.guild_id));
                 if(gameExist(u)){
-                    console.log("gra istnieje");
                     gry[u]->finish(gry[u]->name + nowagra.tra[lang]);
                     bot.message_edit(gry[u]->msg.set_content(gry[u]->getDC()));
                     delgame(u);
-                };
-                gry[u] = new world::world(1,0,260,lang);
-                gry[u]->name = event.msg.author.username;
+                    
+                }
+                gry[u] = new world::world(0, 0, 260, lang);
                 dpp::message mess = dpp::message(event.msg.channel_id,gry[u]->getDC());
                 dpp::component btns = dpp::component();
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id("l"));
@@ -138,8 +154,7 @@ int main(){
                 mess.add_component(btns);
                 mess.set_channel_id(event.msg.channel_id);
                 mess = bot.message_create_sync(mess);
-                gry[u]->msg = mess;
-                gry[u]->u = u;
+                gry[u]->connect(mess, u, event.msg.author.username);
         }
         if(sow.include(event.msg.content)){
             std::string out = ranking.tra[lang];
@@ -170,6 +185,7 @@ int main(){
         }
         if(event.msg.content==".f3"){
             if(gameExist(u)){
+                const std::lock_guard<std::mutex> lock(gry_S);
                 gry[u]->debug = true;
                 bot.message_edit(gry[u]->msg.set_content(gry[u]->getDC()));
             }
@@ -191,6 +207,8 @@ int main(){
         
     });
     bot.on_button_click([&bot](const dpp::button_click_t &event){
+        srand(int(time(0)));//ustawia randomowość
+        const std::lock_guard<std::mutex> lock(gry_S);
         int64_t u = event.command.member.user_id;
         if(!gameExist(u))return;
         world::world *w = gry[u];

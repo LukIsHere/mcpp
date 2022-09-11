@@ -14,7 +14,7 @@ namespace world{
     class world{
         public:
             int lang = 0;
-            int afk = 0;
+            std::atomic<int> afk = 0;
             int16_t *w = nullptr;
             int height;
             int width;
@@ -35,7 +35,7 @@ namespace world{
             world(int worldType,int skin=0,int dur=260,int language=1);
             world(std::string form);//string to world
             ~world();
-            void connect(dpp::message ms,int64_t usr);
+            void connect(dpp::message ms,int64_t usr,std::string name);
             //get output
             std::string getWorld();//world to string
             std::string getDC();

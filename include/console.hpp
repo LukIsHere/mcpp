@@ -16,7 +16,7 @@ class cnsl{
             if(str.str()==last){
                 times++;
             }else{
-                if(first) std::cout<<std::endl;
+                if(first){}
                 else std::cout << "x" << times << std::endl;
                 std::cout << "[silnik] " << cos << " ";
                 times = 1;

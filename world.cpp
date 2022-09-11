@@ -70,6 +70,8 @@ ruda rudy[9] = {
                 afk = 0;
                 end = false;
                 valid = true;
+                delete [] w;
+                w = nullptr;
                 score = 0;
                 WorldT = worldType;
                 playerSkin = skin;
@@ -82,6 +84,11 @@ ruda rudy[9] = {
                         width = 64;
                         height = 192;
                         w = new int16_t[192*64];
+                        for(int ix = 0;ix<64;ix++){
+                            for(int iy = 0;iy<192;iy++){
+                                setBlock(ix,iy,b_air);
+                            }
+                        }
                         // bedrock 0-7
                         int help = utility::random(7);
                         int help2 = 0;
@@ -183,14 +190,14 @@ ruda rudy[9] = {
                                 }
                             }
                         }
-                        y=191;
-                        move(0,-1);
+
+                        y=160;
+                        move(0, -1);
                 }break;
                 case 1:{//nether
                         width = 64;
                         height = 128;
                         w = new int16_t[128*64];
-                        
                         //fill netherrack
                         for (int seti = 0; seti < 128; seti++) {
                         for(int sx = 0;sx<64;sx++){
@@ -314,7 +321,8 @@ ruda rudy[9] = {
             world::world::~world(){
                 delete [] w;
             };
-            void world::world::connect(dpp::message ms,int64_t usr){
+            void world::world::connect(dpp::message ms,int64_t usr,std::string name){
+                this->name = name;
                 msg=ms;
                 u=usr;
             };
@@ -324,6 +332,7 @@ ruda rudy[9] = {
                 return "";
             };//world to string
             std::string world::world::getDC(){
+                if (this == nullptr)return "nie mogę";
                 std::string out = punkty.tra[lang];
                 if(w==nullptr){
                     return "świat uległ korupcji";
