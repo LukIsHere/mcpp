@@ -101,6 +101,10 @@ namespace ums{
             void addU(int64_t id,user u);
             void addU(std::string usr);
             void delU(int64_t id);
+            int getI(int64_t u,std::string p);
+            std::string getS(int64_t u,std::string p);
+            bool getB(int64_t u,std::string p);
+            ums::list getL(int64_t u,std::string p);
             // save/load data from files
             // id:{"key":"value","key2":"value2"}
             void save();

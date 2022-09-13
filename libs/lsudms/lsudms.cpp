@@ -357,6 +357,7 @@ int64_t ums::stoi64(string v){
                 bool first = true;
                 map<string,var>::iterator it;
                 for(it = data.begin();it!=data.end();it++){
+                    if(it->second.exist){
                     if(!first){
                         out+=',';
                     }
@@ -368,6 +369,7 @@ int64_t ums::stoi64(string v){
                     out += '"';
                     out.append(it->second.gstr());
                     out += '"';
+                    }
                 }
                 out+='}';
                 return out;//{"val":"key"}
@@ -530,15 +532,27 @@ int64_t ums::stoi64(string v){
             void ums::db::backup(string name){
                 string loc = name;
                 map<int64_t,user> *m = &data;
-                thread save([m](string loc){
-                    ofstream of(loc);
+                bool *open = &fopen;
+                thread save([open,m](string loc){
+                    while(*open){};
+                    *open = true;
+                    string out;
+                    ofstream file(loc);
                     map<int64_t,user>::iterator it;
                     for(it = m->begin();it!=m->end();it++){
-                        std::stringstream strr;
-                        strr << it->first;
-                        of <<  strr.str() << ":" << it->second.getS() << endl;
+                        
+                        out.append(to_string(it->first));
+                        out+=":";
+                        out.append(it->second.getS());
+                        out.append("\n");
                     };
-                    of.close();
+                    if(!file){cout << "coś poszło ni tak przy stworzeniu pliku" << endl;}
+                    else {
+                        file.clear();
+                        file << out;
+                    }
+                    file.close();
+                    *open = false;
                 },loc);
                 save.detach();
             };
@@ -552,13 +566,45 @@ int64_t ums::stoi64(string v){
                 ums::top out = ums::top(ums::score(0,""));
                 map<int64_t,user>::iterator it;
                 for(it = data.begin();it!=data.end();it++){
-                        out.addS(score(it->second.geti(name),it->second.gets("name")));   
+                        if(it->second.data[name].exist){
+                        out.addS(score(it->second.geti(name),it->second.gets("name")));
+                        }else{
+                            it->second.data.erase(name);
+                        }
                 };
                 return out;
             };
             //get user pointer
             ums::user * ums::db::get(int64_t id){
                 return &(data[id]);
+            };
+            int ums::db::getI(int64_t u,std::string p){
+                if(data[u].data[p].exist){
+                    return(data[u].data[p].gint());
+                }
+                data[u].data.erase(p);
+                return 0;
+            };
+            std::string ums::db::getS(int64_t u,std::string p){
+                if(data[u].data[p].exist){
+                    return(data[u].data[p].gstr());
+                }
+                data[u].data.erase(p);
+                return "";
+            };
+            bool ums::db::getB(int64_t u,std::string p){
+                if(data[u].data[p].exist){
+                    return(data[u].data[p].gbool());
+                }
+                data[u].data.erase(p);
+                return 0;
+            };
+            ums::list ums::db::getL(int64_t u,std::string p){
+                if(data[u].data[p].exist){
+                    return(data[u].data[p].getl());
+                }
+                data[u].data.erase(p);
+                return ums::list();
             };
 
 

@@ -12,7 +12,7 @@ std::mutex gry_S;
 ums::db data("database","usr.txt");
 bool end = false;
 
-ums::list supporteds("975773240381276160,1001193922883751977,1009477093177954366,988752879055667200,1008434141487960074,857272269675167764,969499841765990420,942887041526534174,880770095847211038,870291355329499186");
+ums::list supporteds("891765066767163422,822411547083145226,975773240381276160,1001193922883751977,1009477093177954366,988752879055667200,1008434141487960074,857272269675167764,969499841765990420,942887041526534174,880770095847211038,870291355329499186");
 
 void gameEnd(world::world *w){
     console.log(w->name+" zakończył grę");
@@ -70,7 +70,7 @@ int main(){
     dpp::cluster bot = dpp::cluster(token, dpp::i_default_intents | dpp::i_message_content | dpp::i_guild_messages | dpp::i_guild_integrations);
     std::thread gmClean([&bot](){
         while (!end) {
-            std::this_thread::sleep_for(std::chrono::seconds::duration(15));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
             console.log(" tick anty afka");
             const std::lock_guard<std::mutex> lock(gry_S);
             int64_t u;
@@ -102,6 +102,17 @@ int main(){
         }
         
     });
+    std::thread backup([](){
+        while(!end){
+            //std::this_thread::sleep_for(std::chrono::seconds(15));
+            std::this_thread::sleep_for(std::chrono::hours(24));
+            std::string backup =  std::to_string(time(0));
+            console.log("tworzenie kopi zapasowej : "+backup);
+            data.backup("backup/backup"+backup);
+        }
+        
+    });
+    backup.detach();
     gmClean.detach();
     
     bot.on_log(dpp::utility::cout_logger());
@@ -144,7 +155,7 @@ int main(){
                     delgame(u);
                     
                 }
-                gry[u] = new world::world(0, 0, 260, lang);
+                gry[u] = new world::world(1, 0, 260, lang);
                 dpp::message mess = dpp::message(event.msg.channel_id,gry[u]->getDC());
                 dpp::component btns = dpp::component();
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id("l"));
@@ -170,13 +181,13 @@ int main(){
         }
         if(bow.include(event.msg.content)){
             std::string out = twojnajwynik.tra[lang];
-            out.append(std::to_string(data.get(u)->geti("score")));
+            out.append(data.getS(u,"score"));
             console.log(event.msg.author.username+" sprawdza wynik");
             event.reply(out);
         }
         if(bnt.include(event.msg.content)){
             std::string out = twojnajwynik.tra[lang];
-            out.append(std::to_string(data.get(u)->geti("scoren")));
+            out.append(data.getS(u,"scoren"));
             console.log(event.msg.author.username+" sprawdza wynik");
             event.reply(out);
         }
@@ -204,6 +215,12 @@ int main(){
             event.send("changed language to english");
         }
         if(event.msg.content==".ping")event.reply("pong");
+        if(event.msg.content==".stop"&&event.msg.author.id==dpp::snowflake(537649475494215690)){
+            data.save();
+            event.reply("bot zamknie się w ciągu 15 sekund");
+            std::this_thread::sleep_for(std::chrono::seconds(15));
+            std::abort();
+        }
         
     });
     bot.on_button_click([&bot](const dpp::button_click_t &event){
