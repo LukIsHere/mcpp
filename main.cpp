@@ -4,27 +4,47 @@
 #include "lsudms.hpp"
 #include <thread>
 #include <chrono>
-#include "include/console.hpp"
+#include "logger.hpp"
+#include "jpp.hpp"
 
+cnsl dppc("dpp");
+cnsl console("main");
+
+jpp::jsDB db("db.txt");
+jpp::rank owr;
+jpp::rank ntr;
 
 std::map<int64_t,world::world*> gry;
 std::mutex gry_S;
-ums::db data("database","usr.txt");
 bool end = false;
 
-ums::list supporteds("891765066767163422,822411547083145226,975773240381276160,1001193922883751977,1009477093177954366,988752879055667200,1008434141487960074,857272269675167764,969499841765990420,942887041526534174,880770095847211038,870291355329499186");
-
+ums::list supporteds("869911963608698880,891765066767163422,822411547083145226,975773240381276160,1001193922883751977,1009477093177954366,988752879055667200,1008434141487960074,857272269675167764,969499841765990420,942887041526534174,880770095847211038,870291355329499186");
+bool checkLegal(std::string name){
+    char a;
+    for(int i = 0;i<name.length();i++){
+        a = name.at(i);
+        if(a==';')return false;
+        if(a=='"')return false;
+        if(a==':')return false;
+        if(a==',')return false;
+    }
+    return true;
+}
 void gameEnd(world::world *w){
     console.log(w->name+" zakończył grę");
     std::string scoreT;
     if(w->WorldT==0)scoreT = "score";
     else if(w->WorldT==1)scoreT = "scoren";
-    data.get(w->u)->set("name",w->name);
-    int old = data.get(w->u)->geti(scoreT);
-    if(old<w->score){
-        data.get(w->u)->set(scoreT,w->score);
-        data.save();
+    jpp::json* usr = db.get(w->u);
+    usr->objGet("name")->set(w->name);
+    if(w->score>usr->objGet(scoreT)->intGet()){
+        if(w->WorldT==0)owr.add(jpp::place(w->u,w->score,w->name));
+        if(w->WorldT==1)ntr.add(jpp::place(w->u,w->score,w->name));
+        usr->objGet(scoreT)->set(w->score);
+        db.save();
     }
+    
+    
 }
 bool gameExist(int64_t u/*czy olewać blokadę mapy*/){
     return (gry.find(u) != gry.end());
@@ -38,14 +58,7 @@ void delgame(int64_t u/*czy olewać blokadę mapy*/){
     return;
 }
 int getLang(int64_t dcID){
-    if(!data.data[dcID].data["lang"].exist) {
-        data.data[dcID].data["lang"] = l_pl;
-        return l_pl;
-    }else{
-        int lang = data.data[dcID].data.find("lang")->second.gint();
-        if(lang==l_pl)return l_pl;
-        if(lang==l_en)return l_en;
-    }
+    if(db.get(dcID)->objExist("lang"))return db.get(dcID)->objGet("lang")->intGet();
     return l_pl;
 }
 
@@ -62,7 +75,12 @@ ums::list bnt(".best n,.best nether");
 
 int64_t tu;
 int main(){
-    data.load();
+    db.load();
+    console.log("wczytano bazę danych");
+    owr = db.getRanking("score");
+    ntr = db.getRanking("scoren");
+    db.optimize();
+    console.log("zoptymalizowano bazę danych");
     std::ifstream test2("token.txt");
     std::string token;
     getline(test2, token);
@@ -71,7 +89,7 @@ int main(){
     std::thread gmClean([&bot](){
         while (!end) {
             std::this_thread::sleep_for(std::chrono::seconds(15));
-            console.log(" tick anty afka");
+            //console.log(" tick anty afka"); to-do
             const std::lock_guard<std::mutex> lock(gry_S);
             int64_t u;
             std::vector<int64_t> toDelete;
@@ -108,14 +126,19 @@ int main(){
             std::this_thread::sleep_for(std::chrono::hours(24));
             std::string backup =  std::to_string(time(0));
             console.log("tworzenie kopi zapasowej : "+backup);
-            data.backup("backup/backup"+backup);
+            db.optimize();
+            db.backup(backup);
         }
         
     });
     backup.detach();
     gmClean.detach();
     
-    bot.on_log(dpp::utility::cout_logger());
+    bot.on_log([](const dpp::log_t& event) {
+				if (event.severity > dpp::ll_trace) {
+					dppc.log(dpp::utility::loglevel(event.severity)+":"+event.message);
+				}
+			});
     bot.on_message_create([&bot](const dpp::message_create_t& event){
         int64_t u = event.msg.author.id;
         int lang = getLang(u);
@@ -169,25 +192,25 @@ int main(){
         }
         if(sow.include(event.msg.content)){
             std::string out = ranking.tra[lang];
-            out.append(data.topBy("score").out());
+            out.append(owr.get());
             console.log(event.msg.author.username+" sprawdza ranking");
             event.send(out);
         }
         if(snt.include(event.msg.content)){
             std::string out = ranking.tra[lang];
-            out.append(data.topBy("scoren").out());
+            out.append(ntr.get());
             console.log(event.msg.author.username+" sprawdza ranking");
             event.send(out);
         }
         if(bow.include(event.msg.content)){
             std::string out = twojnajwynik.tra[lang];
-            out.append(data.getS(u,"score"));
+            out.append(std::to_string(db.get(u)->objGet("score")->intGet()));
             console.log(event.msg.author.username+" sprawdza wynik");
             event.reply(out);
         }
         if(bnt.include(event.msg.content)){
             std::string out = twojnajwynik.tra[lang];
-            out.append(data.getS(u,"scoren"));
+            out.append(std::to_string(db.get(u)->objGet("scoren")->intGet()));
             console.log(event.msg.author.username+" sprawdza wynik");
             event.reply(out);
         }
@@ -205,18 +228,18 @@ int main(){
             event.send(commands.tra[lang]);
         }
         if(event.msg.content==".lang pl"){
-            data.data[u].set("lang",l_pl);
+            db.get(u)->objGet("lang")->set(l_pl);
             console.log(event.msg.author.username+" zmienia język na polski");
             event.send("znieniono język na polski");
         }
         if(event.msg.content==".lang en"){
-            data.data[u].set("lang",l_en);
+            db.get(u)->objGet("lang")->set(l_en);
             console.log(event.msg.author.username+" zmienia język na angielski");
             event.send("changed language to english");
         }
         if(event.msg.content==".ping")event.reply("pong");
         if(event.msg.content==".stop"&&event.msg.author.id==dpp::snowflake(537649475494215690)){
-            data.save();
+            db.save();
             event.reply("bot zamknie się w ciągu 15 sekund");
             std::this_thread::sleep_for(std::chrono::seconds(15));
             std::abort();

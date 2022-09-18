@@ -12,6 +12,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 add_subdirectory(libs/dpp)
 add_subdirectory(libs/lsudms)
+add_subdirectory(libs/jpp)
 
 add_executable(${PROJECT_NAME}
     main.cpp world.cpp translation.cpp emoji.cpp blocks.cpp
@@ -19,14 +20,17 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     lsudms
 )
-
 target_link_libraries(${PROJECT_NAME}
     dpp
+)
+target_link_libraries(${PROJECT_NAME}
+    jpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     libs/dpp/include
     libs/lsudms/include
+    libs/jpp/include
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
