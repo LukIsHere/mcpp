@@ -151,6 +151,19 @@ int main()
                                       event.send(SimpleEmbed("Ranking :", rankings::get(overworld)));
                                   }
                               }
+                              if (first == ".top")
+                              {
+                                  if (second == "n" || second == "nether")
+                                  {
+                                      console.log(event.msg.author.username + " sprawdza ranking");
+                                      event.send(SimpleEmbed("Top :", rankings::get(nether,event.msg.guild_id)));
+                                  }
+                                  else if (second == "o" || second == "overworld" || second == "")
+                                  {
+                                      console.log(event.msg.author.username + " sprawdza ranking");
+                                      event.send(SimpleEmbed("Top :", rankings::get(overworld,event.msg.guild_id)));
+                                  }
+                              }
                               if (first == ".best")
                               {
                                   if (second == "o" || second == "overworld" || second == "")
@@ -341,6 +354,20 @@ int main()
                 event.reply(SimpleEmbed("Ranking :",rankings::get(overworld)));
             }
         }
+        if (first == ".top")
+                              {
+                                std::string second = std::get<std::string>(event.get_parameter("dimension"));
+                                  if (second == "nether")
+                                  {
+                                      console.log(event.command.msg.author.username + " sprawdza ranking");
+                                      event.reply(SimpleEmbed("Top :", rankings::get(nether,event.command.guild_id)+"\n(lokalne)"));
+                                  }
+                                  else if (second == "overworld")
+                                  {
+                                      console.log(event.command.msg.author.username + " sprawdza ranking");
+                                      event.reply(SimpleEmbed("Top :", rankings::get(overworld,event.command.guild_id)+"\n(lokalne)"));
+                                  }
+                              }
         if(first=="best"){
             std::string second = std::get<std::string>(event.get_parameter("dimension"));
             if(second=="overworld"||second==""){

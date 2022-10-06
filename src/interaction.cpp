@@ -93,10 +93,10 @@ void interaction::toggleDebug(int64_t u){
 void interaction::addGame(int dimension,const dpp::message_create_t& event,dpp::cluster& bot,int lang,int ussages){
         int64_t u = event.msg.author.id;
         interactor.log(event.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.msg.guild_id));
+        WriteLock(i_mutex);
         if(exist(u)){
             finish(u,bylafk.tra[lang]);
         }
-        WriteLock(i_mutex);
         interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.msg.guild_id), ussages, lang,event.msg.channel_id));
         world::world* w = &(interactions[u]->getWorld());
         //w->msg.content = "configMsg "+std::to_string(u)+' '+event.msg.author.username; this i stupid
@@ -110,10 +110,11 @@ void interaction::addGame(int dimension,const dpp::message_create_t& event,dpp::
 void interaction::addGame(int dimension,const dpp::slashcommand_t& event,dpp::cluster& bot,int lang,int ussages){
         int64_t u = event.command.usr.id;
         interactor.log(event.command.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.command.msg.guild_id));
+        WriteLock lock(i_mutex);
         if(exist(u)){
             finish(u,bylafk.tra[lang]);
         }
-        WriteLock lock(i_mutex);
+        
         interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.command.guild_id), ussages, lang,event.command.channel_id));
         world::world* w = &(interactions[u]->getWorld());
         //w->msg.content = "configMsg "+std::to_string(u)+' '+event.command.usr.username;
@@ -158,7 +159,6 @@ interaction::interaction& interaction::get(int64_t u){
     return *(interactions[u]);
 }
 bool interaction::exist(int64_t u){
-    ReadLock lock(i_mutex);
     return (interactions.find(u)!=interactions.end());
 }
 
