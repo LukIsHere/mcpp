@@ -116,6 +116,7 @@
     "numeric": "cpp",
     "shared_mutex": "cpp",
     "valarray": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "*.rh": "cpp"
   }
 }

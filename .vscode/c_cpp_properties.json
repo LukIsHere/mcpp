@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/libs/dpp/include/*",
-                "${workspaceFolder}/libs/lsudms/include/*"
+                "${workspaceFolder}/libs/lsudms/include/*",
+                "${workspaceFolder}/include/*"
             ],
             "defines": [
                 "_DEBUG",

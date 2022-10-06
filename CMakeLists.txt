@@ -11,14 +11,21 @@ set(CMAKE_USE_PTHREADS_INIT 1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 add_subdirectory(libs/dpp)
-add_subdirectory(libs/lsudms)
 add_subdirectory(libs/jpp)
 
 add_executable(${PROJECT_NAME}
-    main.cpp world.cpp translation.cpp emoji.cpp blocks.cpp
-)
-target_link_libraries(${PROJECT_NAME}
-    lsudms
+    src/main.cpp
+    src/world.cpp 
+    src/translation.cpp 
+    src/emoji.cpp 
+    src/blocks.cpp 
+    src/skin.cpp 
+    src/items.cpp
+    src/interaction.cpp
+    src/shop.cpp
+    src/DB.cpp
+    src/ranking.cpp
+    src/money.cpp
 )
 target_link_libraries(${PROJECT_NAME}
     dpp
@@ -29,8 +36,8 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     libs/dpp/include
-    libs/lsudms/include
     libs/jpp/include
+    include
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

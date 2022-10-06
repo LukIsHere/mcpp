@@ -22,8 +22,8 @@
 #include <Winver.h>
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 10,0,19
- PRODUCTVERSION 10,0,19
+ FILEVERSION 10,0,20
+ PRODUCTVERSION 10,0,20
  FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 
 #ifdef _DEBUG
@@ -43,8 +43,8 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Brainbox.cc"
             VALUE "FileDescription", "D++ - The lightweight C++ Discord API Library"
-            VALUE "FileVersion", "10.0.19"
-            VALUE "ProductVersion", "10.0.19"
+            VALUE "FileVersion", "10.0.20"
+            VALUE "ProductVersion", "10.0.20"
             VALUE "ProductName", "D++ Discord API Library"
             VALUE "InternalName", "DPP"
             VALUE "LegalCopyright", "Copyright (C) 2021 D++ contributors - Licensed under the Apache 2.0 License."

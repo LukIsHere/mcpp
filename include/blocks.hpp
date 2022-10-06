@@ -48,10 +48,103 @@
 #define b_obsidian 42
 #define b_lava 43
 #define b_water 44
+#define b_wool 45
 
 namespace blocks{
 	
 	//clasess
+	class eC{
+		public:
+			std::string em[16];
+			int size=0;
+			eC(const char* c){
+				em[0] = c;
+				size = 1;
+			}
+			eC(std::string emo1,std::string emo2 = "",std::string emo3 = "",std::string emo4 = "",std::string emo5 = "",std::string emo6 = "",std::string emo7 = "",std::string emo8 = "",std::string emo9 = "",std::string emo10 = "",std::string emo11 = "",std::string emo12 = "",std::string emo13 = "",std::string emo14 = "",std::string emo15 = "",std::string emo16 = ""){
+				if(emo1!=""){
+					em[size] = emo1;
+					size++;
+					
+				}
+				if(emo2!=""){
+					em[size] = emo2;
+					size++;
+					
+				}
+				if(emo3!=""){
+					em[size] = emo3;
+					size++;
+					
+				}
+				if(emo4!=""){
+					em[size] = emo4;
+					size++;
+					
+				}
+				if(emo5!=""){
+					em[size] = emo5;
+					size++;
+					
+				}
+				if(emo6!=""){
+					em[size] = emo6;
+					size++;
+					
+				}
+				if(emo7!=""){
+					em[size] = emo7;
+					size++;
+					
+				}
+				if(emo8!=""){
+					em[size] = emo8;
+					size++;
+					
+				}
+				if(emo9!=""){
+					em[size] = emo9;
+					size++;
+					
+				}
+				if(emo10!=""){
+					em[size] = emo10;
+					size++;
+					
+				}
+				if(emo11!=""){
+					em[size] = emo11;
+					size++;
+					
+				}
+				if(emo12!=""){
+					em[size] = emo12;
+					size++;
+					
+				}
+				if(emo13!=""){
+					em[size] = emo13;
+					size++;
+					
+				}
+				if(emo14!=""){
+					em[size] = emo14;
+					size++;
+					
+				}
+				if(emo15!=""){
+					em[size] = emo15;
+					size++;
+					
+				}
+				if(emo16!=""){
+					em[size] = emo16;
+					size++;
+					
+				}
+
+			}
+	};
 	class prop{
 	public:
 		bool unbreakable;
@@ -64,14 +157,16 @@ namespace blocks{
 		std::string name;
 		int id;
 		int variants;
-		std::string emoji;
+		std::string *emoji;
 		prop props;
 		int point;
-		block(std::string named,int idd,std::string emo,prop propsd = prop(),int points = 0);
+		int types;
+		block(std::string named,int idd,eC emo,prop propsd = prop(),int points = 0);
 		std::string getEmoji(int prop=0);
 	};
 	block get(int id);
 	std::string getBlocks();
+	
 	
 	
 }

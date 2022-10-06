@@ -1,9 +1,6 @@
 #pragma once
-#include "world.hpp"
-#include "dpp/dpp.h"
-#include "lsudms.hpp"
-#include <thread>
-#include <chrono>
+#include "interaction.hpp"
+#include "textUtility.hpp"
 
 #define UNLOCKED false
 #define LOCKED true
