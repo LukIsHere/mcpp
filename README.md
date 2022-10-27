@@ -15,6 +15,8 @@ you can test the bot on this server : https://discord.gg/BshSWFYMmg
 
 
 ten projekt nie jest w rzadnym stopniu związany z mojang'iem
+
+
 to tylko fanowski projek
 
 
