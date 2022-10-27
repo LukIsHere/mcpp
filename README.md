@@ -21,3 +21,5 @@ to tylko fanowski projek
 
 
 bot przechowuje id, nazwe i avatar użytkownika.
+
+możesz przetestować bota na tym serverze : https://discord.gg/BshSWFYMmg
