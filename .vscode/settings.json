@@ -117,6 +117,12 @@
     "shared_mutex": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "*.rh": "cpp"
+    "*.rh": "cpp",
+    "any": "cpp",
+    "set": "cpp",
+    "random": "cpp",
+    "ranges": "cpp",
+    "regex": "cpp",
+    "span": "cpp"
   }
 }

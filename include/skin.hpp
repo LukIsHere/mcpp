@@ -34,3 +34,4 @@ namespace skins{
     int getSetSkin(int64_t user,int64_t guild);
     skin* getSkin(int id);
 }
+extern const int skinI;

@@ -75,11 +75,8 @@ ruda rudy[9] = {
             //int x,y;
             //bool valid;
             //bool end;
-            world::world::world(){
-                valid = false;
-                w = nullptr;
-            }
-            world::world::world(int worldType,int skin,int dur,int language,int64_t channel_id){
+            world::world::world(int worldType,int skin,int dur,int language,int64_t channel_id,int64_t guild_id,int64_t usr) : inv(usr,guild_id){
+                u = usr;
                 lang = language;
                 afk = 0;
                 end = false;
@@ -94,14 +91,15 @@ ruda rudy[9] = {
                 down = false;
                 left = false;
                 //world generation
-                msg = dpp::message(channel_id,dpp::embed());
+                msg = dpp::message(channel_id,dpp::embed().set_footer(dpp::embed_footer().set_text("Powered by DPP").set_icon("https://cdn.discordapp.com/icons/825407338755653642/f0b2c332297b6ca7bd3ca2af90ace20e.webp?size=96")));
+                msg.set_content("gla. i co mi zrobisz");
                 dpp::component btns = dpp::component();
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("◀️").set_style(dpp::cos_primary).set_id("l"));
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🔽").set_style(dpp::cos_primary).set_id("d"));
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("▶️").set_style(dpp::cos_primary).set_id("r"));
+                btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("⬆️").set_style(dpp::cos_primary).set_id("u"));
                 btns.add_component(dpp::component().set_label("").set_type(dpp::cot_button).set_emoji("🛑").set_style(dpp::cos_danger).set_id("stop"));
                 msg.add_component(btns);
-                
                 switch (worldType)
                 {
                 case 0:{//overworld
@@ -242,7 +240,7 @@ ruda rudy[9] = {
                         if(getBlockId(tx,ty)==b_netherrack)setBlock(tx,ty,b_lava);
                         }
                         bool red = true;
-                        if(utility::random(2)==2)red=false;
+                        if(utility::random(2)==1)red=false;
                         //grass and trees
                         for(int ix = 0;ix<64;ix++){
                         for(int iy = 0;iy<128;iy++){
@@ -341,12 +339,30 @@ ruda rudy[9] = {
                 down = false;
                 updateMessage();
             };
-            world::world::world(std::string form){
-                //to-do  (later update)
-            };//string to world
             world::world::~world(){
-                delete [] w;
+                //end screen
+                if(end!=true){
+                    finish();
+                }
+                updateMessage();
+                block* ww = w;
+                bot_p->message_edit(msg,[ww](const dpp::confirmation_callback_t &t){
+                    delete [] ww;
+                });
+                
             };
+            void world::world::buttonHandler(const dpp::button_click_t& event){
+                if(event.custom_id=="l")move(-1,0);
+                if(event.custom_id=="r")move(1,0);
+                if(event.custom_id=="d")move(0,-1);
+                if(event.custom_id=="u")move(0,1);
+                if(event.custom_id=="stop")finish(name+zakonczylgre.tra[lang]);
+                updateMessage();
+                if(end==true){
+                    rankings::addScore(jpp::place(u,score,name),WorldT,msg.guild_id,u);
+                }
+                event.reply(dpp::ir_update_message,msg);
+            }
             void world::world::connect(int64_t usr,std::string name){
                 this->name = name;
                 u=usr;
@@ -431,8 +447,8 @@ ruda rudy[9] = {
                 return blocks::get(getBlockId(dx,dy));
             };
             std::string world::world::getBlockEmoji(int dx,int dy){
-                if(dx<0||dx>=width||dy<0||dy>=height) return blocks::get(b_barier).getEmoji();
-                return blocks::get(w[(height-1-dy)*width+dx].b).getEmoji(w[(height-1-dy)*width+dx].prop);
+                if(dx<0||dx>=width||dy<0||dy>=height) return blocks::getEmoji(b_barier);
+                return blocks::getEmoji(w[(height-1-dy)*width+dx].b,w[(height-1-dy)*width+dx].prop);
             }
             int world::world::getBlockId(int dx,int dy){
                 if(dx<0||dx>=width||dy<0||dy>=height) return b_barier;
@@ -523,6 +539,17 @@ ruda rudy[9] = {
                 //geting blocks
                 blocks::block t2 = getBlock(tx,ty+1);
                 blocks::block t = getBlock(tx,ty);
+                if(ym==1&&breakblock(tx,ty)&&breakblock(tx,ty+1)){//up
+                    if(inv.take(blocks::get(b_cobbledeepslate))){
+                        setBlock(x,y,b_cobbledeepslate);
+                    }else if(inv.take(blocks::get(b_cobblestone))){
+                        setBlock(x,y,b_cobblestone);
+                    }else if(inv.take(blocks::get(b_dirt))){
+                        setBlock(x,y,b_dirt);
+                    }else if(inv.take(blocks::get(b_netherrack))){
+                        setBlock(x,y,b_netherrack);
+                    }
+                }
                 if(xm==1){
                     if(emptyblock(x,y+2)&&emptyblock(x+1,y+2)&&emptyblock(x+1,y+1)&&!emptyblock(x+1,y)){
                         x += 1;
@@ -556,10 +583,15 @@ ruda rudy[9] = {
                     down = false;
                 };
                 //death check
-                if(getBlock(x,y-1).props.death){
+                if(getBlock(x,y).props.death){
                     finish(name+umarlw.tra[lang]+getBlock(x,y-1).name);
                     return;
                 }
+                if(getBlock(x,y+1).props.death){
+                    finish(name+umarlw.tra[lang]+getBlock(x,y-1).name);
+                    return;
+                }
+                
                 
             };
             bool world::world::emptyblock(int dx,int dy){
@@ -570,9 +602,17 @@ ruda rudy[9] = {
                 if(b.props.unbreakable)return false;
                 if(b.props.free2walk)return true;
                 durability--;
+                if(b.props.death)finish(umarlw.tra[lang]+b.name);
                 if(durability<0)finish(durabilityKoniec.tra[lang]);
                 setBlock(dx,dy,b_air,0);
                 score += b.point;
+                if(b.drops.type==d_none){
+                    inv.add(b);
+                }else if(b.drops.type==d_block){
+                    inv.add(inventory::drop(b.drops.id,true));
+                }else{
+                    inv.add(inventory::drop(b.drops.id,false));
+                }
                 return true;
 
             };

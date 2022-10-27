@@ -28,7 +28,9 @@ namespace tr{
 #define ranking tr::translation("Ranking :\n","Ranking :\n","text.ranking")
 #define twojnajwynik tr::translation("Twój najlepszy wynik to : "," Your best score is : ","text.najlepszy wynik")
 #define topwynik tr::translation(" najlepszy wynik : "," best score : ","text.top wynik")
-#define commands tr::translation("Komędy  : \n.lang (pl/en) - zniana języka\n.start (ow/n) - zaczyna grę\n.ranking (ow/n) - pokazuje globalny ranking\n.best (ow/n) - najlepszy wynik\n.top (ow/n) - pokazuje serwerowe top  (nie dostępne)\n.dev - pokazuje twórce bot'a\n.skin - pokazuje dostępne skiny\n.skin set <id> - ustawia skina\n.skin now - pokazuje wybranego skina\n","Commands  : \n.lang (pl/en) - changes language\n.start (ow/n) - starts the game\n.ranking (ow/n) - show global ranking\n.best (ow/n) - your best score\n.top (ow/n) - shows best score on server  (not available)\n.dev - creator of a bot'a\n.skin - shows available skins\n.skin set <id> - sets the skin\n.skin now - shows selected skin\n","text.commands")
+#define commands tr::translation("Komędy  : \n.lang - zniana języka\n.start - zaczyna grę\n.ranking - pokazuje globalny ranking\n.best - najlepszy wynik\n.top - pokazuje serwerowe top\n.dev - pokazuje twórce bot'a\n.skin - skiny\n.shop - sklep\n.inv - ekwipunek\n.money - pieniądze\n.site - strona internetowa\npo więcej informacji poprostu wpisz komęde","Commands  : \n.lang - change the language\n.start - starts the game\n.ranking - global ranking\n.best - best score\n.top - top on this server\n.dev - the creator of the bot\n.skin - skins\n.shop - shop\n.inv - inventory\n.money - balance\n.site - website\nfor more informations just type the command","text.commands")
 #define theEnd tr::translation(" Koniec :","The end :","text.end")
 #define badarg tr::translation("złe argumenty","bad arguments","text.badargs")
 #define pomoc tr::translation("Pomoc","Help","text.help")
+#define zarobiono tr::translation("you've earned","zarobiłeś","text.earn")
+

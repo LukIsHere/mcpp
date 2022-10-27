@@ -22,11 +22,6 @@ void updateMessage(int64_t u){
     }
     
 }
-void interaction::endGame(world::world& w){
-    interactor.log(w.name+" zakończył grę");
-    rankings::addScore(jpp::place(w.u,w.score,w.name),w.WorldT,w.msg.guild_id,w.u);
-    db_p->save();
-};
 /// @brief deletes interaction
 /// @param u user id
 void del(int64_t u){
@@ -35,27 +30,13 @@ void del(int64_t u){
     interactions.erase(u);
     interactor.log("usunięto");
 }
-/// @brief add score and deletes game
-/// @param u user
-/// @param reason reason
-void finish(int64_t u,std::string reason){
-    if(!interaction::exist(u))return;
-    if(interactions[u]->type==i_world){
-        world::world* w = &(interactions[u]->getWorld());
-        w->finish(reason);
-        interaction::endGame(*w);
-        updateMessage(u);
-        del(u);
-    }
-
-}
 
 void interaction::afktick(){
+    WriteLock lock(i_mutex);
     interactor.log("afk tick");
     inValid.clear();
     toDelete.clear();
     {
-        ReadLock lock(i_mutex);
         for(auto it : interactions){
         if((it.second)==nullptr)inValid.push_back(it.first);
             else{
@@ -71,16 +52,17 @@ void interaction::afktick(){
             }
         }
     }
-    WriteLock lock(i_mutex);
+    
     for(auto it : inValid){//nullptrs
         interactions.erase(it);
     }
     for(auto it : toDelete){//afk interaction
         if(interactions[it]->type==i_world){
-            finish(it,interactions[it]->getWorld().name+bylafk.tra[interactions[it]->getWorld().lang]);
+            del(it);
+        }else if(interactions[it]->type==i_shop){
+            del(it);
         }else{
-            delete interactions[it];
-            interactions.erase(it);
+            del(it);
         }
         
     }
@@ -95,9 +77,9 @@ void interaction::addGame(int dimension,const dpp::message_create_t& event,dpp::
         interactor.log(event.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.msg.guild_id));
         WriteLock(i_mutex);
         if(exist(u)){
-            finish(u,bylafk.tra[lang]);
+            del(u);
         }
-        interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.msg.guild_id), ussages, lang,event.msg.channel_id));
+        interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.msg.guild_id), ussages, lang,event.msg.channel_id,event.msg.guild_id,event.msg.author.id));
         world::world* w = &(interactions[u]->getWorld());
         //w->msg.content = "configMsg "+std::to_string(u)+' '+event.msg.author.username; this i stupid
         w->connect(u,event.msg.author.username);
@@ -112,10 +94,10 @@ void interaction::addGame(int dimension,const dpp::slashcommand_t& event,dpp::cl
         interactor.log(event.command.msg.author.username+" tworzy grę w overworldzie na serwerze "+std::to_string(+event.command.msg.guild_id));
         WriteLock lock(i_mutex);
         if(exist(u)){
-            finish(u,bylafk.tra[lang]);
+            del(u);
         }
         
-        interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.command.guild_id), ussages, lang,event.command.channel_id));
+        interactions[u] = new interaction(new world::world(dimension,skins::getSetSkin(u,event.command.guild_id), ussages, lang,event.command.channel_id,event.command.guild_id,event.command.usr.id));
         world::world* w = &(interactions[u]->getWorld());
         //w->msg.content = "configMsg "+std::to_string(u)+' '+event.command.usr.username;
         w->connect(u,event.command.usr.username);
@@ -126,8 +108,18 @@ void interaction::addGame(int dimension,const dpp::slashcommand_t& event,dpp::cl
             });
         });
 };
-void interaction::addShop(int type){
-        ReadLock lock(i_mutex);
+void interaction::addShop(const dpp::message_create_t& event,int type,int lang){
+        WriteLock lock(i_mutex);
+        int64_t u = event.msg.author.id;
+        if(exist(u)){
+            del(u);
+        }
+        interactions[u] = new interaction(new shops::shop(type,u,event.msg.guild_id));
+        shops::shop* s = &(interactions[u]->getShop());
+        bot_p->message_create(s->msg.set_channel_id(event.msg.channel_id),[s](const dpp::confirmation_callback_t &t){
+            if(t.is_error())return;
+            s->msg = t.get<dpp::message>();
+        });
 };
 void interaction::button(const dpp::button_click_t& event){
         ReadLock lock(i_mutex);
@@ -137,18 +129,17 @@ void interaction::button(const dpp::button_click_t& event){
         if(interactions[u]->type==i_world){
             world::world *w = &(interactions[u]->getWorld());
             if(w!=nullptr&&w->valid&&w->msg.channel_id==event.command.channel_id&&w->msg.id == event.command.msg.id){
-                if(event.custom_id=="l")w->move(-1,0);
-                if(event.custom_id=="r")w->move(1,0);
-                if(event.custom_id=="d")w->move(0,-1);
-                if(event.custom_id=="stop")w->finish(w->name+zakonczylgre.tra[w->lang]);
-                w->updateMessage();
-                event.reply(dpp::ir_update_message,w->msg);
-                if(w->end){
+                w->buttonHandler(event);
+                if(w->end==true){
                     lock.unlock();
                     WriteLock lockdel(i_mutex);
-                    endGame(*w);
                     del(u);
                 };
+            }
+        }else if(interactions[u]->type==i_shop){
+            shops::shop *s = &(interactions[u]->getShop());
+            if(s!=nullptr&&s->msg.channel_id==event.command.channel_id&&s->msg.id == event.command.msg.id){
+                s->buttonHandler(event);
             }
         }
         
@@ -156,6 +147,7 @@ void interaction::button(const dpp::button_click_t& event){
 
 interaction::interaction& interaction::get(int64_t u){
     ReadLock lock(i_mutex);
+    
     return *(interactions[u]);
 }
 bool interaction::exist(int64_t u){

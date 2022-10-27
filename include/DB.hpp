@@ -1,3 +1,4 @@
+#pragma once
 #include "dpp/dpp.h"
 #include "jpp.hpp"
 #include "Smutex.hpp"

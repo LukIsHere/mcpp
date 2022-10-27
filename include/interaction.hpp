@@ -3,7 +3,6 @@
 #include "ranking.hpp"
 #include "dpp/dpp.h"
 #include "DB.hpp"
-#include "inventory.hpp"
 #include <thread>
 #include <chrono>
 #include "logger.hpp"
@@ -33,7 +32,7 @@ namespace  interaction{
     };
     void addGame(int dimension,const dpp::message_create_t& event,dpp::cluster& bot,int lang,int ussages = 260);
     void addGame(int dimension,const dpp::slashcommand_t& event,dpp::cluster& bot,int lang,int ussages = 260);
-    void addShop(int type);
+    void addShop(const dpp::message_create_t& event,int type,int lang);
     void endGame(world::world& w);
     void toggleDebug(int64_t u);
     void afktick();

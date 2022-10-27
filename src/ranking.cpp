@@ -1,5 +1,6 @@
 #include "ranking.hpp"
 #include <map>
+#include "iostream"
 
 //globalny ranking
 Lock Rank_mutex;
@@ -68,4 +69,29 @@ void rankings::addScore(jpp::place p,int dimension,int64_t server,int64_t u){
         ntL[server].add(p);
         ntr.add(p);
     }
+};
+void rankings::updateGist(){
+    std::thread([](){
+        ReadLock lock(Rank_mutex);
+        jpp::json rankinggi;
+        rankinggi["o"] = owr.expo();
+        rankinggi["n"] = ntr.expo();
+        lock.unlock();
+        rankinggi["o"].arrLoop([](jpp::json *u){
+            if(u->objGet("id")->intGet()!=0){
+                std::this_thread::sleep_for(std::chrono::seconds(4));
+                u->objGet("avatar")->set(bot_p->user_get_sync(u->objGet("id")->intGet()).get_avatar_url(4096));
+            }
+            
+        });
+        
+        rankinggi["n"].arrLoop([](jpp::json *u){
+            if(u->objGet("id")->intGet()!=0){
+                std::this_thread::sleep_for(std::chrono::seconds(4));
+                u->objGet("avatar")->set(bot_p->user_get_sync(u->objGet("id")->intGet()).get_avatar_url(4096));
+            }
+        });
+        apis::SendUpdate("ranking",rankinggi);
+        std::cout << "gist zaktualizowany" << std::endl;
+    }).detach();
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "DB.hpp"
+#include "api.hpp"
 #include "world.hpp"
 
 namespace rankings{
@@ -9,4 +10,5 @@ namespace rankings{
     void save();
     void addScore(jpp::place p,int dimension,int64_t server,int64_t u);
     void init();
+    void updateGist();
 }

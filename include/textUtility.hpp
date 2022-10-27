@@ -1,47 +1,33 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace text{
     class cmd{
         public:
-        std::string v;
+        std::vector<std::string> v;
         cmd(std::string cm){
-            v = cm;
-        }
-        std::string get(int p){
             int pla = 0;
             char c;
             std::string out;
-            for(int i = 0;i<v.length();i++){
-                c = v.at(i);
+            int cml = cm.length();
+            for(int i = 0;i<cml;i++){
+                c = cm.at(i);
                 if(c==' '){
-                    
-                    if(p==pla){
-                        return out;
-                    }
+                    v.push_back(out);
                     out = "";
                     pla++;
                 }else out+=c;
 
             }
-            if(p==pla){
-                return out;
-            }
-            return "";
+            v.push_back(out);
 
         }
+        std::string get(int p){
+            return v[p];
+        }
         int l(){
-            int pla = 0;
-            char c;
-            for(int i = 0;i<v.length();i++){
-                c = v.at(i);
-                if(c==' '){
-                    pla++;
-                }
-
-            }
-            pla++;
-            return pla;
+            return v.size();
         }
 
 

@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/libs/dpp/include/*",
-                "${workspaceFolder}/libs/lsudms/include/*",
+                "${workspaceFolder}/libs/jpp/include/*",
                 "${workspaceFolder}/include/*"
             ],
             "defines": [
@@ -56,7 +56,8 @@
             "name": "msvc",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/libs/dpp/include/*"
+                "${workspaceFolder}/libs/dpp/include/*",
+                "${workspaceFolder}/include/*"
             ],
             "defines": [
                 "_DEBUG",
@@ -74,7 +75,8 @@
                     "${workspaceFolder}/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

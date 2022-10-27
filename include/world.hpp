@@ -8,6 +8,11 @@
 #include "translation.hpp"
 #include <array>
 #include "skin.hpp"
+#include "money.hpp"
+#include "inventory.hpp"
+#include "ranking.hpp"
+#include "DB.hpp"
+
 #define overworld 0
 #define nether 1
 #define custom 2
@@ -68,6 +73,7 @@ namespace world{
     class world{
         public:
             int lang = 0;
+            inventory::inventory inv;
             std::atomic<int> afk = 0;
             block *w = nullptr;
             int height;
@@ -88,10 +94,9 @@ namespace world{
             bool front;
             bool down;
             bool left;
-            world();
-            world(int worldType,int skin,int dur,int language,int64_t channel_id);
-            world(std::string form);//string to world
+            world(int worldType,int skin,int dur,int language,int64_t channel_id,int64_t guild_id,int64_t usr);
             ~world();
+            void buttonHandler(const dpp::button_click_t& event);
             void connect(int64_t usr,std::string name);
             //get output
             std::string getWorld();//world to string
