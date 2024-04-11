@@ -1,4 +1,9 @@
 Discontinued
+
+Entire bot source code i wrote and lib jpp (which i wrote too) is under [MIT license](https://opensource.org/license/mit)
+
+Except lib dpp inside libs/dpp is under apache2 the oryginal [dpp repo](https://github.com/brainboxdotcc/DPP)
+
 #en
 
 
